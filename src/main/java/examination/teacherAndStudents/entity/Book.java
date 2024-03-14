@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +25,8 @@ public class Book {
     private String rackNo;
 
     private int quantityAvailable; // Quantity of available copies
-
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<BookBorrowing> bookBorrowings;
 
     // Constructors, getters, setters, etc.
 }

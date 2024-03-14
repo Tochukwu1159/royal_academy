@@ -1,16 +1,18 @@
 package examination.teacherAndStudents.controller;
 import examination.teacherAndStudents.dto.BookRequest;
-import examination.teacherAndStudents.dto.HostelRequest;
 import examination.teacherAndStudents.entity.Book;
 import examination.teacherAndStudents.entity.BookBorrowing;
+import examination.teacherAndStudents.entity.Dormitory;
 import examination.teacherAndStudents.service.LibraryService;
+import examination.teacherAndStudents.utils.AccountUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/v1/library")
 public class LibraryController {
@@ -49,9 +51,11 @@ public class LibraryController {
     }
 
     @GetMapping("/allBooks")
-    public ResponseEntity<List<Book>> getAllBooks() {
+        public ResponseEntity<Page<Book>> getAllBooks(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
+                @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
+                @RequestParam(defaultValue = "id") String sortBy) {
         try {
-            List<Book> allBooks = libraryService.getAllBooks();
+            Page<Book> allBooks = libraryService.getAllBooks(pageNo, pageSize, sortBy);
             return ResponseEntity.ok(allBooks);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -59,9 +63,9 @@ public class LibraryController {
     }
 
     @PostMapping("/borrowBook")
-    public ResponseEntity<BookBorrowing> borrowBook(@RequestParam Long studentId, @RequestParam Long bookId) {
+    public ResponseEntity<BookBorrowing> borrowBook(@RequestParam String memberId, @RequestParam Long bookId) {
         try {
-            BookBorrowing borrowing = libraryService.borrowBook(studentId, bookId);
+            BookBorrowing borrowing = libraryService.borrowBook(memberId, bookId);
             return ResponseEntity.ok(borrowing);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

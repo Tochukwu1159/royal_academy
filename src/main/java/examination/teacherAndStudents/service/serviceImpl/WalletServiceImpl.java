@@ -6,6 +6,7 @@ import examination.teacherAndStudents.entity.Notification;
 import examination.teacherAndStudents.entity.Transaction;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.entity.Wallet;
+import examination.teacherAndStudents.error_handler.CustomInternalServerException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
 import examination.teacherAndStudents.repository.NotificationRepository;
 import examination.teacherAndStudents.repository.TransactionRepository;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -167,5 +169,39 @@ public class WalletServiceImpl implements WalletService {
         emailService.sendEmails(emailDetails);
     }
 
+    public SchoolBalanceResponse schoolTotalWallet() {
+        try {
+            String email = SecurityConfig.getAuthenticatedUserEmail();
+            Optional<User> admin = userRepository.findByEmail(email);
+            if (!admin.isPresent()) {
+                throw new CustomNotFoundException("Admin is not valid");
+            }
+
+            List<Wallet> wallets = walletRepository.findAll();
+            if (wallets.isEmpty()) {
+                throw new CustomNotFoundException("No wallets found");
+            }
+
+            BigDecimal totalBalance = BigDecimal.ZERO;
+            BigDecimal totalMoneySent = BigDecimal.ZERO;
+            BigDecimal totalFunds = BigDecimal.ZERO;
+            for (Wallet wallet : wallets) {
+                totalBalance = totalBalance.add(wallet.getBalance());
+                totalMoneySent = totalMoneySent.add(wallet.getTotalMoneySent());
+                totalFunds = totalFunds.add(wallet.getBalance()).add(wallet.getTotalMoneySent());
+            }
+
+            // Create and return the wallet response
+            return SchoolBalanceResponse.builder()
+                    .TotalMoneyFunded(totalFunds)
+                    .balance(totalBalance)
+                    .totalStudentMoneySent(totalMoneySent)
+                    .build();
+        } catch (Exception e) {
+            throw new CustomInternalServerException("Error fetching school wallet balance"+ e);
+        }
+    }
+
 
 }
+

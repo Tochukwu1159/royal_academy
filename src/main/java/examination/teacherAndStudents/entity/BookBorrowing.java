@@ -26,7 +26,7 @@ public class BookBorrowing {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User student; // Assuming User is the entity representing a student
+    private LibraryMembership student; // Assuming User is the entity representing a student
 
     private LocalDateTime borrowDate;
 

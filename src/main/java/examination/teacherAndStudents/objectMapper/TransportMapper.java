@@ -1,8 +1,9 @@
 package examination.teacherAndStudents.objectMapper;
 
+import examination.teacherAndStudents.dto.ScoreRequest;
 import examination.teacherAndStudents.dto.TransportRequest;
+import examination.teacherAndStudents.dto.TransportResponse;
 import examination.teacherAndStudents.entity.Transport;
-import examination.teacherAndStudents.entity.TransportResponse;
 import examination.teacherAndStudents.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -26,16 +27,9 @@ import java.util.Set;
 
 
         public void updateTransportFromRequest(Transport transport, TransportRequest transportRequest) {
-            if (transportRequest.getRouteName() != null) {
-                transport.setRouteName(transportRequest.getRouteName());
-            }
 
             if (transportRequest.getVehicleNumber() != null) {
                 transport.setVehicleNumber(transportRequest.getVehicleNumber());
-            }
-
-            if (transportRequest.getLicenceNumber() != null) {
-                transport.setPhoneNumber(transportRequest.getPhoneNumber());
             }
         }
 

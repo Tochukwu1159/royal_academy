@@ -1,8 +1,5 @@
 package examination.teacherAndStudents.controller;
-import examination.teacherAndStudents.dto.ApiResponse;
-import examination.teacherAndStudents.dto.FundWalletRequest;
-import examination.teacherAndStudents.dto.PaymentResponse;
-import examination.teacherAndStudents.dto.WalletResponse;
+import examination.teacherAndStudents.dto.*;
 import examination.teacherAndStudents.service.WalletService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +22,12 @@ public class WalletController {
     public ResponseEntity<ApiResponse<WalletResponse>> getStudentBalance() {
        WalletResponse walletResponse = walletService.getStudentWalletBalance();
         return new ResponseEntity<>(new ApiResponse<>("success",true,walletResponse),HttpStatus.OK);
+    }
+    @GetMapping("school/balance")
+   public ResponseEntity<ApiResponse<SchoolBalanceResponse>> schoolTotalWallet(){
+        SchoolBalanceResponse schoolBalanceResponse = walletService.schoolTotalWallet();
+        return  new ResponseEntity<>(new ApiResponse<>("success", true, schoolBalanceResponse), HttpStatus.OK);
+
     }
 
 

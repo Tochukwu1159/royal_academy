@@ -1,14 +1,11 @@
 package examination.teacherAndStudents.controller;
-import examination.teacherAndStudents.dto.ApiResponse;
-import examination.teacherAndStudents.dto.TransactionResponse;
 import examination.teacherAndStudents.dto.TransportRequest;
+import examination.teacherAndStudents.dto.TransportResponse;
 import examination.teacherAndStudents.entity.Transport;
-import examination.teacherAndStudents.entity.TransportResponse;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.repository.TransportRepository;
-import examination.teacherAndStudents.service.TransactionService;
 import examination.teacherAndStudents.service.TransportService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +17,12 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/transports")
+@RequiredArgsConstructor
 public class TransportController {
 
-    @Autowired
-    private TransportService transportService;
-    @Autowired
-    private TransportRepository transportRepository;
+
+    private final TransportService transportService;
+    private final TransportRepository transportRepository;
 
     @PostMapping("/add")
     public ResponseEntity<TransportResponse> addTransport(@RequestBody TransportRequest transportRequest) {
@@ -59,19 +56,19 @@ public class TransportController {
             return new ResponseEntity<>(transport, HttpStatus.OK);
     }
 
-    @PostMapping("/add-students/{transportId}")
-    public ResponseEntity<String> addStudentsToTransport(@PathVariable Long transportId, @RequestBody List<Long> studentIds) {
-            transportService.addStudentsToTransport(transportId, studentIds);
-            return ResponseEntity.ok("Students added to transport successfully.");
-
-    }
+//    @PostMapping("/add-students/{transportId}")
+//    public ResponseEntity<String> addStudentsToTransport(@PathVariable Long transportId, @RequestBody List<Long> studentIds) {
+//            transportService.addStudentsToTransport(transportId, studentIds);
+//            return ResponseEntity.ok("Students added to transport successfully.");
+//
+//    }
 
     @PostMapping("/send-email-to-students/{transportId}")
     public ResponseEntity<String> sendEmailToStudents(@PathVariable Long transportId) {
         try {
             Optional<Transport> transport = transportRepository.findById(transportId);
             Transport transport1 = transport.get();
-            String busRoute = transport1.getRouteName();
+            String busRoute = transport1.getBusRoute().getRouteName();
             // Assuming students can be retrieved from the transport entity
             Set<User> students = transport1.getStudents();
 

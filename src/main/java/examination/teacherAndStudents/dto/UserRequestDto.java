@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.Date;
 
 @Data
 @Builder
@@ -42,7 +43,7 @@ public class UserRequestDto {
     @NotEmpty(message = "Phone Number cannot be empty")
     private String phoneNumber;
      private String registrationNumber;
-    private String dateOfBirth;
+    private Date dateOfBirth;
     private String formTeacher;
     private SubClass classAssigned;
     private  String address;

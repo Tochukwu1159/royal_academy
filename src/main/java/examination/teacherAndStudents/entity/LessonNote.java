@@ -21,7 +21,7 @@ public class LessonNote {
     private Long id;
 
     private String title;
-    private String content; // Content of the lesson note (in doc format or as plain text)
+    private String content;
     private Year year;
 
     @Enumerated(EnumType.STRING)

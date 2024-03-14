@@ -2,6 +2,8 @@ package examination.teacherAndStudents.repository;
 
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.utils.Roles;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +13,10 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByEmail(String email);
+    Optional<User> findByUniqueRegistrationNumber(String uniqueRegistrationNumber);
+    long countByRoles(Roles role);
+
+    long countByStudentGuardianNameIsNotNull();
 
     Optional<User> findByEmail(String email);
     User findByIdAndRoles(Long studentId, Roles roles);
@@ -20,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     User findByEmailAndRoles(String email, Roles roles);
-    List<User> findUserByRoles(Roles roles);
 
-//    List<User> findByClassLevelId(Long classId);
+    Page<User> findAllByRoles(Roles role, Pageable pageable);
+
 }

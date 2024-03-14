@@ -19,7 +19,6 @@ public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String feedbackText;
     private LocalDateTime submittedTime;
     private String replyText;
@@ -30,5 +29,4 @@ public class Feedback {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Other fields, getters, setters
 }

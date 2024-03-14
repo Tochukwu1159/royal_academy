@@ -1,8 +1,8 @@
 package examination.teacherAndStudents.controller;
 
-import examination.teacherAndStudents.dto.HostelRequest;
-import examination.teacherAndStudents.entity.Hostel;
-import examination.teacherAndStudents.service.HostelService;
+import examination.teacherAndStudents.dto.DormitoryRequest;
+import examination.teacherAndStudents.entity.Dormitory;
+import examination.teacherAndStudents.service.DormitoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/test")
 public class Controller {
     @Autowired
-    private HostelService hostelService;
+    private DormitoryService dormitoryService;
     @PostMapping("/add")
-    public ResponseEntity<Hostel> createHostel(@RequestBody HostelRequest hostel) {
-        Hostel createdHostel = hostelService.createHostel(hostel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdHostel);
+    public ResponseEntity<Dormitory> createHostel(@RequestBody DormitoryRequest hostel) {
+        Dormitory createdDormitory = dormitoryService.createDormitory(hostel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdDormitory);
     }
 
 

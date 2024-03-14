@@ -1,5 +1,6 @@
 package examination.teacherAndStudents.controller;
 import examination.teacherAndStudents.dto.*;
+import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.BadRequestException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
 import examination.teacherAndStudents.service.UserService;
@@ -27,10 +28,10 @@ public class UserController {
         return  userService.createAdmin(userRequest);
     }
 
-    @PostMapping("/teacher/create")
-    public UserResponse createTeacher(@RequestBody @Valid UserRequestDto userRequest) throws MessagingException {
-        return  userService.createTeacher(userRequest);
-    }
+//    @PostMapping("/teacher/create")
+//    public UserResponse createTeacher(@RequestBody @Valid UserRequestDto userRequest) throws MessagingException {
+//        return  userService.createTeacher(userRequest);
+//    }
 
 
     @PostMapping("/login")
@@ -58,6 +59,12 @@ public class UserController {
     @GetMapping("/resetPassword")
     public  UserResponse resetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest, @RequestParam("token") String token){
         return userService.resetPassword(passwordResetRequest, token);
+    }
+
+    @PostMapping("/deactivate/{uniqueRegistrationNumber}")
+    public  User deactivateStudent( @PathVariable String uniqueRegistrationNumber){
+        return userService.deactivateStudent(uniqueRegistrationNumber);
+
     }
 
 

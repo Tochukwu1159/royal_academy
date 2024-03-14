@@ -20,6 +20,9 @@ public class ClassCategory {
     @OneToMany(mappedBy = "classCategory", cascade = CascadeType.ALL)
     private List<SubClass> subClasses;
 
-    // Other fields, getters, setters
+    @ManyToOne
+    @JoinColumn(name = "academic_year_id")
+    private AcademicYear academicYear;
+
 }
 

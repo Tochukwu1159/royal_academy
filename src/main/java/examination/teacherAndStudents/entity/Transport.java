@@ -17,29 +17,22 @@ public class Transport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "route_name")
-    private String routeName;
-
     @Column(name = "vehicle_number")
     private String vehicleNumber;
 
-    @Column(name = "driver_name")
     private String driverName;
 
-    @Column(name = "driver_address")
-    private String driverAddress;
+    private String driverPhoneNumber;
 
-    @Column(name = "licence_number")
-    private String licenceNumber;
-
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    private String driverLicence;
 
     @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> students;
 
-    @OneToOne(mappedBy = "transport")
-    private Driver driver;
+
+    @OneToOne
+    @JoinColumn(name = "bus_route_id", referencedColumnName = "id")
+    private BusRoute busRoute;
 
     // getters and setters
 }

@@ -3,6 +3,7 @@ package examination.teacherAndStudents.dto;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Builder
 @Data
@@ -20,7 +21,7 @@ public class AccountInfo {
     private String phoneNumber;
     private String uniqueRegistrationNumber;
     private String studentGuardianName;
-    private String age;
+    private Date dateOfBirth;
     private String classAssigned;
     private String studentGuardianPhoneNumber;
     private String gender;

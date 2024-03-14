@@ -1,6 +1,8 @@
 package examination.teacherAndStudents.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import examination.teacherAndStudents.utils.ContractType;
+import examination.teacherAndStudents.utils.MaritalStatus;
 import examination.teacherAndStudents.utils.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,13 +12,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -33,13 +33,17 @@ public class User {
         private String firstName;
     //    @Size(min = 3, message = "Last name can not be less than 3")
     private String lastName;
-    private String jobDescription;
+    private String middleName;
 
     private String email;
     //    @Size(min = 6, message = "Password should have at least 6 characters")
     private String password;
     @Enumerated(value = EnumType.STRING)
     private Roles roles;
+
+    @Enumerated(value = EnumType.STRING)
+    private MaritalStatus maritalStatus;
+
     //    @Size(min = 10, message = "Phone number should have at least 10 characters")
     private String phoneNumber;
     private LocalDate admissionDate;
@@ -55,17 +59,26 @@ public class User {
     private String religion;
 
     private Boolean isVerified;
-    private String subjectAssigned;
+
     private String address;
-    private String dateOfBirth;
+    private Date dateOfBirth;
     private String age;
 
     private String formTeacher;
+
+    private String bankAccountName;
+    private String bankAccountNumber;
+    private String bankName;
+    private String resume;
+    @Enumerated(value = EnumType.STRING)
+    private ContractType contractType;
+    private BigDecimal salary;
     private String academicQualification;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime modifiedAt;
+    private String subjectAssigned;
 
     @OneToMany(mappedBy = "user")
     private List<Score> score;
@@ -80,8 +93,6 @@ public class User {
     @OneToMany(mappedBy = "user")
     private  List<Dues> duesList;
 
-//    @OneToMany(mappedBy = "user")
-//    private  List<SchoolEvent> blogs;
 
     @OneToMany(mappedBy = "user")
     private  List<Result> results;
@@ -95,7 +106,7 @@ public class User {
     private  List<AttendancePercent> attendancePercents;
 
     @OneToMany(mappedBy = "user")
-    private  List<TeacherAttendancePercent> teacherAttendancePercents;
+    private  List<StaffAttendancePercent> staffAttendancePercents;
 
     @OneToMany(mappedBy = "user")
     private  List<MedicalRecord> medicalRecords;
@@ -111,14 +122,14 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "hostel_id")
-    private Hostel hostel;
+    private DormitoryRooms dormitory;
 
     @ManyToOne
     @JoinColumn(name = "transport_id")
     private Transport transport;
 
     @OneToMany(mappedBy = "user")
-    private List<TeacherAttendance> attendanceRecords;
+    private List<StaffAttendance> attendanceRecords;
 
     @OneToMany(mappedBy = "user")
     private List<Attendance> attendances;

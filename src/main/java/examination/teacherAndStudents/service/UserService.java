@@ -1,12 +1,12 @@
 package examination.teacherAndStudents.service;
 import examination.teacherAndStudents.dto.*;
+import examination.teacherAndStudents.entity.User;
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
     UserResponse createAccount(UserRequestDto userRequest) throws MessagingException;
 //    UserResponse editStudent(EditUserRequest editUserDto);
-    UserResponse createTeacher(UserRequestDto userRequest)throws MessagingException;
     UserResponse createAdmin(UserRequestDto userRequest) throws MessagingException;
      LoginResponse loginAdmin(LoginRequest loginRequest);
 
@@ -25,6 +25,8 @@ public interface UserService {
 //    AllUserResponse getAllUsers();
     UserResponse getUser();
      ResponseEntity<Void> deleteUser(Long userId);
+
+    User deactivateStudent(String uniqueRegistrationNumber);
 
 
 

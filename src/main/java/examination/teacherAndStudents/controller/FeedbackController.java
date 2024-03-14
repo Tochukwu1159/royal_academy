@@ -2,9 +2,12 @@ package examination.teacherAndStudents.controller;
 
 import examination.teacherAndStudents.dto.FeedbackDto;
 import examination.teacherAndStudents.dto.FeedbackResponse;
+import examination.teacherAndStudents.entity.Dues;
 import examination.teacherAndStudents.entity.Feedback;
 import examination.teacherAndStudents.service.FeedbackService;
+import examination.teacherAndStudents.utils.AccountUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +34,14 @@ public class FeedbackController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<FeedbackResponse>> getAllFeedback() {
-        List<Feedback> feedbackList = feedbackService.getAllFeedback();
+        public ResponseEntity<Page<FeedbackResponse>> getAllFeedback(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
+                @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
+                @RequestParam(defaultValue = "id") String sortBy) {
+        Page<Feedback> feedbackList = feedbackService.getAllFeedback(pageNo, pageSize, sortBy);
 
         // Map Feedback objects to FeedbackResponse objects
-        List<FeedbackResponse> feedbackResponses = feedbackList.stream()
-                .map(FeedbackResponse::fromFeedback)
-                .collect(Collectors.toList());
+        Page<FeedbackResponse> feedbackResponses = feedbackList
+                .map(FeedbackResponse::fromFeedback);
 
         return ResponseEntity.ok(feedbackResponses);
     }

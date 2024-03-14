@@ -1,8 +1,10 @@
 package examination.teacherAndStudents.service;
 
 import examination.teacherAndStudents.dto.BookRequest;
+import examination.teacherAndStudents.dto.LibraryMemberResponse;
 import examination.teacherAndStudents.entity.Book;
 import examination.teacherAndStudents.entity.BookBorrowing;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -14,9 +16,9 @@ public interface LibraryService {
 
     void deleteBook(Long bookId);
 
-    List<Book> getAllBooks();
+    Page<Book> getAllBooks(int pageNo, int pageSize, String sortBy);
 
-    BookBorrowing borrowBook(Long studentId, Long bookId);
+    BookBorrowing borrowBook(String memberId, Long bookId);
 
     BookBorrowing returnBook(Long borrowingId);
 }

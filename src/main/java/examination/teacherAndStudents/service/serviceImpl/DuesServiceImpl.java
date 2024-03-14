@@ -2,6 +2,7 @@ package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.Security.SecurityConfig;
 import examination.teacherAndStudents.dto.DuesRequest;
+import examination.teacherAndStudents.entity.Dormitory;
 import examination.teacherAndStudents.entity.Dues;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.AuthenticationFailedException;
@@ -13,6 +14,10 @@ import examination.teacherAndStudents.service.DuesService;
 
 import examination.teacherAndStudents.utils.DuesStatus;
 import examination.teacherAndStudents.utils.Roles;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,13 +37,17 @@ public class DuesServiceImpl implements DuesService {
         this.userRepository = userRepository;
     }
 
-    public List<Dues> getAllDues() {
+
+    public Page<Dues> getAllDues(int pageNo, int pageSize, String sortBy) {
         String email = SecurityConfig.getAuthenticatedUserEmail();
         User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
         if (admin == null) {
             throw new AuthenticationFailedException("Please login as an Admin");
         }
-        return duesRepository.findAll();
+
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+
+        return duesRepository.findAll(paging);
     }
 
     public Dues getDuesById(Long id) {

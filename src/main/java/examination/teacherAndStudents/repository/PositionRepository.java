@@ -12,6 +12,9 @@ import java.util.List;
 public interface PositionRepository extends JpaRepository<Position, Long> {
     Position findByUser(User user);
 
+    List<Position> findAllBySubClassAndAndAverageScoreIsGreaterThanEqual(SubClass subClass, double averageScore);
+
+
 
     List<Position> findAllBySubClassIdAndYearAndTerm(Long classLevelId, Year year, StudentTerm term);
 

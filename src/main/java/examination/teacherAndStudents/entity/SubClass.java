@@ -30,11 +30,14 @@ public class SubClass {
 //    @OneToMany(mappedBy = "classCategory", cascade = CascadeType.ALL)
 //    private List<SubClass> subClasses;
 
-    private String formTeacher;
     private String classUniqueUrl;
 
     @OneToMany(mappedBy = "subClass")
     private List<Subject> subject;
+
+    @ManyToOne
+    @JoinColumn(name = "form_teacher_id")
+    private FormTeacher formTeacher;
 
     @OneToMany(mappedBy = "subClass")
     private  List<AttendancePercent> attendancePercents;
@@ -43,8 +46,6 @@ public class SubClass {
     @OneToMany(mappedBy = "studentClass")
     private List<StudentClassLevel> studentClassLevels = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "classLevel")
-//    private  List<AttendancePercent> attendancePercents;
 
 //    @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL)
 //    private List<Attendance> attendanceList;

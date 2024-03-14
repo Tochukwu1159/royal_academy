@@ -3,6 +3,7 @@ package examination.teacherAndStudents.utils;
 import examination.teacherAndStudents.error_handler.BadRequestException;
 import examination.teacherAndStudents.error_handler.UserAlreadyExistException;
 import examination.teacherAndStudents.error_handler.UserPasswordMismatchException;
+import examination.teacherAndStudents.repository.LibraryMemberRepository;
 import examination.teacherAndStudents.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
@@ -16,6 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AccountUtils {
+    public static final String PAGENO = "0";
+    public static final String PAGESIZE = "10";
     public  static  final String ACCOUNT_EXISTS_CODE ="001";
     public  static  final String ACCOUNT_NOT_EXIST_CODE ="003";
     public  static  final String ACCOUNT_EXITS_MESSAGE ="This user already exists";
@@ -57,6 +60,7 @@ public class AccountUtils {
 
 
     private static UserRepository userRepository;
+    private static LibraryMemberRepository libraryMemberRepository;
 
     // Constructor to initialize userRepository
     public AccountUtils(UserRepository userRepository) {
@@ -120,7 +124,7 @@ public class AccountUtils {
         return adminId;
     }
 
-    public static final String generateOtherStaffId() {
+    public static final String generateStaffId() {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         String yearString = String.valueOf(currentYear);
 
@@ -140,6 +144,28 @@ public class AccountUtils {
         } while (userRepository.existsByUniqueRegistrationNumber(staffId));
 
         return staffId;
+    }
+
+    public static final String generateLibraryId() {
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        String yearString = String.valueOf(currentYear);
+
+        SecureRandom random = new SecureRandom();
+        String libraryId;
+
+        do {
+            StringBuilder randomNumbers = new StringBuilder();
+            // Generate 3 random numbers
+            for (int i = 0; i < 3; i++) {
+                int randomNumber = random.nextInt(10);
+                randomNumbers.append(randomNumber);
+            }
+
+            // Combine "ADMIN" + current year + 3 random numbers
+            libraryId = "LIB" + yearString + randomNumbers;
+        } while (libraryMemberRepository.existsByMemberId(libraryId));
+
+        return libraryId;
     }
 
 

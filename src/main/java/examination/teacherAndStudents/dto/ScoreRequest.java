@@ -21,4 +21,6 @@ public class ScoreRequest {
     private Year year;;
 
     private StudentTerm term;
+
+
 }

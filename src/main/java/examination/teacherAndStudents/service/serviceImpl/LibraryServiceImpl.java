@@ -2,18 +2,21 @@ package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.Security.SecurityConfig;
 import examination.teacherAndStudents.dto.BookRequest;
-import examination.teacherAndStudents.entity.Book;
-import examination.teacherAndStudents.entity.BookBorrowing;
-import examination.teacherAndStudents.entity.User;
+import examination.teacherAndStudents.entity.*;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
 import examination.teacherAndStudents.repository.BookBorrowingRepository;
 import examination.teacherAndStudents.repository.BookRepository;
+import examination.teacherAndStudents.repository.LibraryMemberRepository;
 import examination.teacherAndStudents.repository.UserRepository;
 import examination.teacherAndStudents.service.LibraryService;
 import examination.teacherAndStudents.utils.BorrowingStatus;
 import examination.teacherAndStudents.utils.Roles;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LibraryServiceImpl implements LibraryService {
 
     @Autowired
@@ -28,6 +32,8 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Autowired
     private BookBorrowingRepository bookBorrowingRepository;
+
+    private final LibraryMemberRepository libraryMemberRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -115,27 +121,28 @@ public class LibraryServiceImpl implements LibraryService {
         }
     }
 
+
     @Override
-    public List<Book> getAllBooks() {
+    public Page<Book> getAllBooks(int pageNo, int pageSize, String sortBy)  {
         String email = SecurityConfig.getAuthenticatedUserEmail();
         User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
         if (admin == null) {
             throw new CustomNotFoundException("Please login as an Admin");
         }
         try {
-            return bookRepository.findAll();
+            Pageable paging = PageRequest.of(pageNo, pageSize);
+            return bookRepository.findAll(paging);
         } catch (Exception e) {
             throw new CustomInternalServerException("Error fetching all books: " + e.getMessage());
         }
     }
 
     @Override
-    public BookBorrowing borrowBook(Long studentId, Long bookId) {
+    public BookBorrowing borrowBook(String memberId, Long bookId) {
         try {
-            String email = SecurityConfig.getAuthenticatedUserEmail();
-            User user = userRepository.findByEmailAndRoles(email, Roles.STUDENT);
-            if (user == null) {
-                throw new CustomNotFoundException("Please login as a student");
+            LibraryMembership libraryMembership = libraryMemberRepository.findByMemberId(memberId);
+            if (libraryMembership == null) {
+                throw new CustomNotFoundException("Member not found");
             }
 
             Book book = bookRepository.findById(bookId)
@@ -143,7 +150,7 @@ public class LibraryServiceImpl implements LibraryService {
 
             // Check if the student has already borrowed the book with a status other than RETURNED
             BookBorrowing existingBorrowing = bookBorrowingRepository.findByStudentAndBookAndStatusNot(
-                    user, book, BorrowingStatus.RETURNED);
+                    libraryMembership, book, BorrowingStatus.RETURNED);
 
             if (existingBorrowing != null) {
                 throw new CustomInternalServerException("You have already borrowed this book.");
@@ -159,7 +166,7 @@ public class LibraryServiceImpl implements LibraryService {
 
                 // Create a borrowing entry
                 BookBorrowing borrowing = new BookBorrowing();
-                borrowing.setStudent(user);
+                borrowing.setStudent(libraryMembership);
                 borrowing.setBook(book);
                 borrowing.setBorrowDate(LocalDateTime.now());
                 borrowing.setStatus(BorrowingStatus.BORROWED);

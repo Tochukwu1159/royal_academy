@@ -1,7 +1,6 @@
 package examination.teacherAndStudents.repository;
 
 import examination.teacherAndStudents.entity.SickLeave;
-import examination.teacherAndStudents.entity.Student;
 import examination.teacherAndStudents.utils.SickLeaveStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 

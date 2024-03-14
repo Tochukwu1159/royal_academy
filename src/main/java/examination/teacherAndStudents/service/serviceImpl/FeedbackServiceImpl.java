@@ -3,6 +3,7 @@ package examination.teacherAndStudents.service.serviceImpl;
 import examination.teacherAndStudents.Security.SecurityConfig;
 import examination.teacherAndStudents.dto.FeedbackDto;
 import examination.teacherAndStudents.dto.ReplyFeedbackDto;
+import examination.teacherAndStudents.entity.Dues;
 import examination.teacherAndStudents.entity.Feedback;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
@@ -13,6 +14,10 @@ import examination.teacherAndStudents.repository.UserRepository;
 import examination.teacherAndStudents.service.FeedbackService;
 import examination.teacherAndStudents.utils.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -74,8 +79,9 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
     }
 
-    public List<Feedback> getAllFeedback() {
-        return feedbackRepository.findAll();
+       public Page<Feedback> getAllFeedback(int pageNo, int pageSize, String sortBy){
+            Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+        return feedbackRepository.findAll(paging);
     }
 
 }

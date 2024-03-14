@@ -1,10 +1,6 @@
 package examination.teacherAndStudents.controller;
-import examination.teacherAndStudents.dto.HostelRequest;
 import examination.teacherAndStudents.dto.MedicalRecordRequest;
-import examination.teacherAndStudents.entity.Book;
-import examination.teacherAndStudents.entity.BookBorrowing;
 import examination.teacherAndStudents.entity.MedicalRecord;
-import examination.teacherAndStudents.service.LibraryService;
 import examination.teacherAndStudents.service.MedicalRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

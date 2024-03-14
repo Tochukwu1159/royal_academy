@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class UserServiceImpl implements UserService {
+public class    UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -98,6 +98,7 @@ public class UserServiceImpl implements UserService {
                 .dateOfBirth(userRequest.getDateOfBirth())
                 .lastName(userRequest.getLastName())
                 .email(userRequest.getEmail())
+                .roles(Roles.STUDENT)
                 .admissionDate(userRequest.getAdmissionDate())
                 .isVerified(true)
                 .phoneNumber(userRequest.getPhoneNumber())
@@ -152,7 +153,7 @@ public class UserServiceImpl implements UserService {
                 .responseMessage(AccountUtils.ACCOUNT_CREATION_MESSAGE)
                 .accountInfo(AccountInfo.builder()
                         .studentGuardianOccupation(savedUser.getStudentGuardianOccupation())
-                        .age(savedUser.getDateOfBirth())
+                        .dateOfBirth(savedUser.getDateOfBirth())
                         .admissionDate(savedUser.getAdmissionDate())
                         .gender(savedUser.getGender())
                         .studentGuardianName(savedUser.getStudentGuardianName())
@@ -234,92 +235,92 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public UserResponse createTeacher(UserRequestDto userRequest) throws MessagingException {
-        if (userRepository.existsByEmail(userRequest.getEmail())) {
-
-            throw new UserAlreadyExistException("User with email already exist");
-
-        }
-        if (!AccountUtils.validatePassword(userRequest.getPassword(), userRequest.getConfirmPassword())){
-            throw new UserPasswordMismatchException("Password does not match");
-
-        }
-        if(AccountUtils.existsByMail(userRequest.getEmail())){
-            throw new BadRequestException("Error: Email is already taken!");
-        }
-
-        if(AccountUtils.isValidEmail(userRequest.getEmail())){
-            throw new BadRequestException("Error: Email must be valid");
-        }
-
-        if(userRequest.getPassword().length() < 8 || userRequest.getConfirmPassword().length() < 8 ){
-            throw new BadRequestException("Password is too short, should be minimum of 8 character longt");
-        }
-        //        Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-//        // Get the secure URL of the uploaded image from Cloudinary
-//        String imageUrl = (String) uploadResult.get("secure_url");
-
-
-        User newUser = User.builder()
-                .firstName(userRequest.getFirstName())
-                .lastName(userRequest.getLastName())
-                .email(userRequest.getEmail())
-                .formTeacher(userRequest.getFormTeacher())
-                .phoneNumber(userRequest.getPhoneNumber())
-                .password(passwordEncoder.encode(userRequest.getPassword()))
-                .isVerified(true)
-                .uniqueRegistrationNumber(AccountUtils.generateTeacherId())
-                .address(userRequest.getAddress())
-                .gender(userRequest.getGender())
-                .age(userRequest.getAge())
-                .year(Year.now())
-                .religion(userRequest.getReligion())
-                .academicQualification(userRequest.getAcademicQualification())
-                .subjectAssigned(userRequest.getSubjectAssigned())
-                .roles(Roles.TEACHER)
-                .build();
-        User savedUser = userRepository.save(newUser);
-
-
-        //update the form teacher of the class
-//        SubClass classAssigned = subClassRepository.findBySubClassName(savedUser.get);
-//        classAssigned.setFormTeacher(savedUser.getFirstName() + " " + savedUser.getLastName());
-//        subClassRepository.save(classAssigned);
-
-        //update the student record
-//        StudentRecord studentRecord = studentRecordRepository.findBySubClassAndYear(savedUser.getFormTeacher() , savedUser.getYear());
-//        studentRecord.setFormTeacher(savedUser.getFirstName() + " " + savedUser.getLastName());
-//        studentRecordRepository.save(studentRecord);
-
-        EmailDetails emailDetails = EmailDetails.builder()
-                .recipient(savedUser.getEmail())
-                .subject("ACCOUNT CREATION")
-                .templateName("email-template-teachers")  // Name of your Thymeleaf template
-                .model(Map.of("name", savedUser.getFirstName() + " " + savedUser.getLastName()))
-                .build();
-        emailService.sendHtmlEmail(emailDetails);
-
-        return UserResponse.builder()
-                .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS)
-                .responseMessage(AccountUtils.ACCOUNT_CREATION_MESSAGE)
-                .accountInfo(AccountInfo.builder()
-                        .gender(savedUser.getGender())
-                        .uniqueRegistrationNumber(savedUser.getUniqueRegistrationNumber())
-                        .academicQualification(savedUser.getAcademicQualification())
-                        .subjectAssigned(savedUser.getSubjectAssigned())
-                        .firstName(savedUser.getFirstName())
-                        .address(savedUser.getAddress())
-                        .phoneNumber(savedUser.getPhoneNumber())
-                        .lastName(savedUser.getLastName())
-                        .email(savedUser.getEmail())
-                        .firstName(savedUser.getFirstName())
-                        .lastName(savedUser.getLastName())
-                        .email(savedUser.getEmail())
-                        .build())
-
-                .build();
-    }
+//    @Override
+//    public UserResponse createTeacher(UserRequestDto userRequest) throws MessagingException {
+//        if (userRepository.existsByEmail(userRequest.getEmail())) {
+//
+//            throw new UserAlreadyExistException("User with email already exist");
+//
+//        }
+//        if (!AccountUtils.validatePassword(userRequest.getPassword(), userRequest.getConfirmPassword())){
+//            throw new UserPasswordMismatchException("Password does not match");
+//
+//        }
+//        if(AccountUtils.existsByMail(userRequest.getEmail())){
+//            throw new BadRequestException("Error: Email is already taken!");
+//        }
+//
+//        if(AccountUtils.isValidEmail(userRequest.getEmail())){
+//            throw new BadRequestException("Error: Email must be valid");
+//        }
+//
+//        if(userRequest.getPassword().length() < 8 || userRequest.getConfirmPassword().length() < 8 ){
+//            throw new BadRequestException("Password is too short, should be minimum of 8 character longt");
+//        }
+//        //        Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+////        // Get the secure URL of the uploaded image from Cloudinary
+////        String imageUrl = (String) uploadResult.get("secure_url");
+//
+//
+//        User newUser = User.builder()
+//                .firstName(userRequest.getFirstName())
+//                .lastName(userRequest.getLastName())
+//                .email(userRequest.getEmail())
+//                .formTeacher(userRequest.getFormTeacher())
+//                .phoneNumber(userRequest.getPhoneNumber())
+//                .password(passwordEncoder.encode(userRequest.getPassword()))
+//                .isVerified(true)
+//                .uniqueRegistrationNumber(AccountUtils.generateTeacherId())
+//                .address(userRequest.getAddress())
+//                .gender(userRequest.getGender())
+//                .age(userRequest.getAge())
+//                .year(Year.now())
+//                .religion(userRequest.getReligion())
+//                .academicQualification(userRequest.getAcademicQualification())
+//                .subjectAssigned(userRequest.getSubjectAssigned())
+//                .roles(Roles.TEACHER)
+//                .build();
+//        User savedUser = userRepository.save(newUser);
+//
+//
+//        //update the form teacher of the class
+////        SubClass classAssigned = subClassRepository.findBySubClassName(savedUser.get);
+////        classAssigned.setFormTeacher(savedUser.getFirstName() + " " + savedUser.getLastName());
+////        subClassRepository.save(classAssigned);
+//
+//        //update the student record
+////        StudentRecord studentRecord = studentRecordRepository.findBySubClassAndYear(savedUser.getFormTeacher() , savedUser.getYear());
+////        studentRecord.setFormTeacher(savedUser.getFirstName() + " " + savedUser.getLastName());
+////        studentRecordRepository.save(studentRecord);
+//
+//        EmailDetails emailDetails = EmailDetails.builder()
+//                .recipient(savedUser.getEmail())
+//                .subject("ACCOUNT CREATION")
+//                .templateName("email-template-teachers")  // Name of your Thymeleaf template
+//                .model(Map.of("name", savedUser.getFirstName() + " " + savedUser.getLastName()))
+//                .build();
+//        emailService.sendHtmlEmail(emailDetails);
+//
+//        return UserResponse.builder()
+//                .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS)
+//                .responseMessage(AccountUtils.ACCOUNT_CREATION_MESSAGE)
+//                .accountInfo(AccountInfo.builder()
+//                        .gender(savedUser.getGender())
+//                        .uniqueRegistrationNumber(savedUser.getUniqueRegistrationNumber())
+//                        .academicQualification(savedUser.getAcademicQualification())
+//                        .subjectAssigned(savedUser.getSubjectAssigned())
+//                        .firstName(savedUser.getFirstName())
+//                        .address(savedUser.getAddress())
+//                        .phoneNumber(savedUser.getPhoneNumber())
+//                        .lastName(savedUser.getLastName())
+//                        .email(savedUser.getEmail())
+//                        .firstName(savedUser.getFirstName())
+//                        .lastName(savedUser.getLastName())
+//                        .email(savedUser.getEmail())
+//                        .build())
+//
+//                .build();
+//    }
 
 
     public LoginResponse loginUser(LoginRequest loginRequest) {
@@ -640,46 +641,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-//    @Override
-//        public AllUserResponse getAllUsers() {
-//            try {
-//                List<User> userList = userRepository.findAll();
-//
-//                List<AccountInfo> accountInfoList = userList.stream()
-//                        .map(user -> new AccountInfo(
-//                                user.getFirstName(),
-//                                user.getLastName(),
-//                                user.getEmail(),
-//                                user.getPhoneNumber(),
-//                                user.getUniqueRegistrationNumber(),
-//                                user.getAge(),
-//                                user.getStudentGuardianPhoneNumber(),
-//                                user.getClassAssigned(),
-//                                user.getPhoneNumber(),
-//                                user.getGender(),
-//                                user.getAddress(),
-//                                user.getSubjectAssigned(),
-//                                user.getAcademicQualification(),
-//                                user.getUniqueRegistrationNumber()
-//                        ))
-//                        .collect(Collectors.toList());
-//
-//                return AllUserResponse.builder()
-//                        .responseCode(AccountUtils.FETCH_ALL_USERS_SUCCESSFUL_CODE)
-//                        .responseMessage(AccountUtils.FETCH_ALL_USERS_SUCCESSFUL_MESSAGE)
-//                        .accountInfo(accountInfoList)
-//                        .build();
-//            } catch (Exception e) {
-//                // Log the exception for further analysis
-//                e.printStackTrace();
-//                return AllUserResponse.builder()
-//                        .responseCode(AccountUtils.INTERNAL_SERVER_ERROR_CODE)
-//                        .responseMessage(AccountUtils.INTERNAL_SERVER_ERROR_MESSAGE)
-//                        .accountInfo(Collections.emptyList()) // Return an empty list in case of an error
-//                        .build();
-//            }
-//        }
-
     @Override
     public UserResponse getUser() {
         try {
@@ -703,8 +664,7 @@ public class UserServiceImpl implements UserService {
                     .phoneNumber(user.getPhoneNumber())
                     .uniqueRegistrationNumber(user.getUniqueRegistrationNumber())
                     .studentGuardianName(user.getStudentGuardianName())
-                    .age(user.getAge())
-//                    .classAssigned(user.getClassLevel().getClassName())
+                    .dateOfBirth(user.getDateOfBirth())
                     .studentGuardianPhoneNumber(user.getStudentGuardianPhoneNumber())
                     .gender(user.getGender())
                     .subjectAssigned(user.getSubjectAssigned())
@@ -747,6 +707,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
+    public User deactivateStudent(String uniqueRegistrationNumber) {
+        try {
+            Optional<User> studentOptional = userRepository.findByUniqueRegistrationNumber(uniqueRegistrationNumber);
+            if (studentOptional.isPresent()) {
+                User student = studentOptional.get();
+                student.setIsVerified(false);
+                return userRepository.save(student);
+            } else {
+                throw new EntityNotFoundException("Student not found with registration number: " + uniqueRegistrationNumber);
+            }
+        } catch (Exception e) {
+            throw new CustomInternalServerException("Error deactivating student" +e);
+        }
+    }
 }
 
