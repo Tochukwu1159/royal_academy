@@ -5,15 +5,25 @@ import examination.teacherAndStudents.dto.StaffResponse;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
+import examination.teacherAndStudents.error_handler.EntityNotFoundException;
 import examination.teacherAndStudents.objectMapper.StaffMapper;
 import examination.teacherAndStudents.repository.UserRepository;
 import examination.teacherAndStudents.service.StaffService;
 import examination.teacherAndStudents.utils.AccountUtils;
 import examination.teacherAndStudents.utils.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,10 +38,10 @@ public class StaffServiceImpl implements StaffService {
     // Create (Add)  staff
     public StaffResponse createStaff(StaffRequest staffRequest) {
         try {
-            User Staff = staffMapper.mapToStaff(staffRequest);
-            Staff.setUniqueRegistrationNumber(AccountUtils.generateStaffId());
-            Staff.setRoles(staffRequest.getRoles());
-            User savedStaff = userRepository.save(Staff);
+            User staff = staffMapper.mapToStaff(staffRequest);
+            staff.setUniqueRegistrationNumber(AccountUtils.generateStaffId());
+            staff.setRoles(staffRequest.getRoles());
+            User savedStaff = userRepository.save(staff);
             return staffMapper.mapToStaffResponse(savedStaff);
         } catch (Exception e) {
             // Handle any exceptions
@@ -70,12 +80,26 @@ public class StaffServiceImpl implements StaffService {
     }
 
     // Get all  staff
-    public List<StaffResponse> findAllStaff() {
-        List<User> staffList = userRepository.findAll();
-        return staffList.stream()
-                .map(staffMapper::mapToStaffResponse)
-                .collect(Collectors.toList());
+    public Page<StaffResponse> findAllStaff(String searchTerm, int page, int size, String sortBy) {
+        Pageable paging = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+
+        // Search by teacherId, teacher's name, or teacher's role
+        Specification<User> spec = Specification.where(null);
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            spec = spec.or((root, query, cb) ->
+                            cb.equal(root.get("id"), Long.parseLong(searchTerm)))
+                    .or((root, query, cb) ->
+                            cb.like(cb.lower(root.get("firstName")), "%" + searchTerm.toLowerCase() + "%"))
+                    .or((root, query, cb) ->
+                            cb.like(cb.lower(root.get("lastName")), "%" + searchTerm.toLowerCase() + "%"))
+                    .or((root, query, cb) ->
+                            cb.like(cb.lower(root.get("roles")), "%" + searchTerm.toLowerCase() + "%"));
+        }
+
+        Page<User> staffPage = userRepository.findAll(spec, paging);
+        return staffPage.map(staffMapper::mapToStaffResponse);
     }
+
 
     // Get  staff by ID
     public StaffResponse findStaffById(Long StaffId) {
@@ -91,6 +115,22 @@ public class StaffServiceImpl implements StaffService {
         } catch (Exception e) {
             // Handle any exceptions
             throw new CustomInternalServerException("Error deleting  staff: " + e.getMessage());
+        }
+    }
+
+    public StaffResponse deactivateStaff(String uniqueRegistrationNumber) {
+        try {
+            Optional<User> optionalStaff = userRepository.findByUniqueRegistrationNumber(uniqueRegistrationNumber);
+            if (optionalStaff.isPresent()) {
+                User staff = optionalStaff.get();
+                staff.setDeactivate(true);
+                 userRepository.save(staff);
+                 return staffMapper.mapToStaffResponse(staff);
+            } else {
+                throw new EntityNotFoundException("Staff not found with registration number: " + uniqueRegistrationNumber);
+            }
+        } catch (Exception e) {
+            throw new CustomInternalServerException("Error deactivating student" +e);
         }
     }
 

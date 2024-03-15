@@ -37,16 +37,22 @@ public class TimetableServiceImpl implements TimetableService {
     private SubjectScheduleRepository subjectScheduleRepository;
     @Autowired
     private SubClassRepository subClassRepository;
+    @Autowired
+    private AcademicYearRepository academicYearRepository;
 
     @Transactional
         @Override
-    public Timetable createTimetable(Long schoolClassId, DayOfWeek dayOfWeek, List<SubjectScheduleRequest> subjectSchedules, TimetableType timetableType, StudentTerm term, Year year) {
+    public Timetable createTimetable(Long schoolClassId, Long teacherId, DayOfWeek dayOfWeek, List<SubjectScheduleRequest> subjectSchedules, TimetableType timetableType, StudentTerm term, Long yearId) {
         try {
             // Ensure the user has admin role
             String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
             if (admin == null) {
                 throw new CustomNotFoundException("Please login as an Admin");
+            }
+            User teacher = userRepository.findByIdAndRoles(teacherId, Roles.TEACHER);
+            if (teacher == null) {
+                throw new CustomNotFoundException("Teacher not found");
             }
 
             // Perform any validation or processing if needed
@@ -55,12 +61,17 @@ public class TimetableServiceImpl implements TimetableService {
                 throw new CustomNotFoundException("Class with ID: " + schoolClassId + " not found");
             }
 
+            Optional<AcademicYear> academicYear = academicYearRepository.findById(yearId);
+            if (!academicYear.isPresent()) {
+                throw new CustomNotFoundException("Academic year with ID: " + yearId + " not found");
+            }
+
             // Create a Timetable entity
             Timetable timetable = new Timetable();
             timetable.setSubClass(classLevel.get());
             timetable.setDayOfWeek(dayOfWeek);
             timetable.setTerm(term);
-            timetable.setYear(year);
+            timetable.setYear(academicYear.get().getYear());
             timetable.setTimetableType(timetableType); // Set the timetable type
 
             // Create SubjectSchedule entities and associate them with the timetable
@@ -80,6 +91,7 @@ public class TimetableServiceImpl implements TimetableService {
                 schedule.setTeachingStatus(TeachingStatus.NOT_TAUGHT);
                 schedule.setEndTime(scheduleRequest.getEndTime());
                 schedule.setTimetable(timetable);
+                schedule.setTeacher(teacher.getFirstName() + teacher.getLastName());
                 schedules.add(schedule);
             }
 
@@ -104,7 +116,7 @@ public class TimetableServiceImpl implements TimetableService {
 
 
    @Override
-    public Timetable updateTimetable(Long timetableId, Long schoolClassId, DayOfWeek dayOfWeek, List<SubjectScheduleRequest> subjectSchedules, StudentTerm term, Year year) {
+    public Timetable updateTimetable(Long timetableId, Long teacherId, Long schoolClassId, DayOfWeek dayOfWeek, List<SubjectScheduleRequest> subjectSchedules, StudentTerm term, Long yearId) {
         try {
             // Ensure the user has admin role
             String email = SecurityConfig.getAuthenticatedUserEmail();
@@ -117,17 +129,28 @@ public class TimetableServiceImpl implements TimetableService {
             Timetable existingTimetable = timetableRepository.findById(timetableId)
                     .orElseThrow(() -> new CustomNotFoundException("Timetable not found with ID: " + timetableId));
 
+            // Retrieve the existing teacher
+            User teacher = userRepository.findByIdAndRoles(teacherId, Roles.TEACHER);
+            if (teacher == null) {
+                throw new CustomNotFoundException("Teacher not found");
+            }
+
             // Perform any validation or processing if needed
             Optional<SubClass> classLevel = subClassRepository.findById(schoolClassId);
             if (!classLevel.isPresent()) {
                 throw new CustomNotFoundException("Class with ID: " + schoolClassId + " not found");
             }
 
+            Optional<AcademicYear> academicYear = academicYearRepository.findById(yearId);
+            if (!academicYear.isPresent()) {
+                throw new CustomNotFoundException("Academic year with ID: " + yearId + " not found");
+            }
+
             // Update existingTimetable properties
             existingTimetable.setSubClass(classLevel.get());
             existingTimetable.setDayOfWeek(dayOfWeek);
             existingTimetable.setTerm(term);
-            existingTimetable.setYear(year);
+            existingTimetable.setYear(academicYear.get().getYear());
 
             // Update SubjectSchedule entities and associate them with the timetable
             List<SubjectSchedule> schedules = new ArrayList<>();
@@ -140,11 +163,13 @@ public class TimetableServiceImpl implements TimetableService {
                     throw new CustomNotFoundException("Subject not found with ID: " + scheduleRequest.getSubjectId());
                 }
 
+
                 // Set the Subject for the SubjectSchedule
                 schedule.setSubject(subjectForSchedule.get());
                 schedule.setStartTime(scheduleRequest.getStartTime());
                 schedule.setEndTime(scheduleRequest.getEndTime());
                 schedule.setTimetable(existingTimetable);
+                schedule.setTeacher(teacher.getFirstName() + teacher.getLastName());
                 schedules.add(schedule);
             }
 

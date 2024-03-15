@@ -2,26 +2,18 @@ package examination.teacherAndStudents.dto;
 
 import examination.teacherAndStudents.utils.DayOfWeek;
 import examination.teacherAndStudents.utils.StudentTerm;
-import examination.teacherAndStudents.utils.TimetableType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
-import java.time.Year;
 import java.util.List;
-@Data
-@Builder
 @AllArgsConstructor
+@Data
 @NoArgsConstructor
-public class TimetableCreationRequest {
-    private Long  teacherId;
+public class TimetableUpdateRequest {
     private Long schoolClassId;
-    
+    private DayOfWeek dayOfWeek;
+    private List<SubjectScheduleRequest> subjectSchedules;
     private StudentTerm term;
     private Long yearId;
-    private DayOfWeek dayOfWeek;
-    private TimetableType timetableType;
-    private List<SubjectScheduleRequest> subjectSchedules;
 }

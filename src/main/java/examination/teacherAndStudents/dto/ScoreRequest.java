@@ -1,5 +1,6 @@
 package examination.teacherAndStudents.dto;
 
+import examination.teacherAndStudents.entity.AcademicYear;
 import examination.teacherAndStudents.utils.StudentTerm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +19,7 @@ public class ScoreRequest {
     private Long subjectId;
     private int examScore;
     private int assessmentScore;
-    private Year year;;
-
+    private Long academicYearId;;
     private StudentTerm term;
 
 

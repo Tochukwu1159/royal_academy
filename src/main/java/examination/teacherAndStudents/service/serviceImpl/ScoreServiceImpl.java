@@ -33,6 +33,8 @@ public class ScoreServiceImpl implements ScoreService {
     private ResultService resultService;
     @Autowired
     private SubClassRepository subClassRepository;
+    @Autowired
+    private AcademicYearRepository academicYearRepository;
 //    @Autowired
 //    private  ResultService resultService;
 
@@ -43,20 +45,23 @@ public class ScoreServiceImpl implements ScoreService {
         SubClass studentClass = subClassRepository.findById(scoreRequest.getSubClassId())
                 .orElseThrow(() -> new ResourceNotFoundException("Student class not found"));
 
-        Subject subject = subjectRepository.findByIdAndTermAndYear(scoreRequest.getSubjectId(), scoreRequest.getTerm(), scoreRequest.getYear())
-                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
-        //please check again later
-//        List<String> classSubjects = student.getStudentClassLevels().stream()
-//                .findFirst() // Assuming you want the first element, modify as needed
-//                .map(studentClassLevel -> studentClassLevel.getStudentClass().getSubject().stream()
-//                        .map(Subject::getName)
-//                        .collect(Collectors.toList()))
-//                .orElse(Collections.emptyList());
+        AcademicYear academicYear = academicYearRepository.findById(scoreRequest.getAcademicYearId())
+                .orElseThrow(() -> new ResourceNotFoundException("Academic year  not found"));
 
-        // Check if the provided subject is in the list of subjects for the class level
-//        if (!classSubjects.contains(subject.getName())) {
-//            throw new IllegalArgumentException("Error adding score: Student's class does not include the provided subject");
-//        }
+        Subject subject = subjectRepository.findByIdAndTermAndYear(scoreRequest.getSubjectId(), scoreRequest.getTerm(), academicYear.getYear())
+                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+       // please check again later
+        List<String> classSubjects = student.getStudentClassLevels().stream()
+                .findFirst() // Assuming you want the first element, modify as needed
+                .map(studentClassLevel -> studentClassLevel.getStudentClass().getSubject().stream()
+                        .map(Subject::getName)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+
+    //     Check if the provided subject is in the list of subjects for the class level
+        if (!classSubjects.contains(subject.getName())) {
+            throw new IllegalArgumentException("Error adding score: Student's class does not include the provided subject");
+        }
 
         // Validate scores (add additional validation as needed)
         if (scoreRequest.getExamScore() < 0 || scoreRequest.getAssessmentScore() < 0) {
@@ -64,13 +69,13 @@ public class ScoreServiceImpl implements ScoreService {
         }
 
         // Check if a score already exists for the student and subject
-        Score existingScore = scoreRepository.findByUserAndSubClassIdAndSubjectNameAndYearAndTerm(student, scoreRequest.getSubClassId(), subject.getName(),scoreRequest.getYear(), scoreRequest.getTerm());
+        Score existingScore = scoreRepository.findByUserAndSubClassIdAndSubjectNameAndYearAndTerm(student, scoreRequest.getSubClassId(), subject.getName(),academicYear.getYear(), scoreRequest.getTerm());
 
         if (existingScore != null) {
             // Update the existing score
             existingScore.setExamScore(scoreRequest.getExamScore());
             existingScore.setAssessmentScore(scoreRequest.getAssessmentScore());
-            existingScore.setYear(scoreRequest.getYear());
+            existingScore.setYear(academicYear.getYear());
             existingScore.setTerm(scoreRequest.getTerm());
             existingScore.setSubClass(studentClass);
             scoreRepository.save(existingScore);
@@ -82,14 +87,14 @@ public class ScoreServiceImpl implements ScoreService {
             score.setExamScore(scoreRequest.getExamScore());
             score.setSubClass(studentClass);
             score.setAssessmentScore(scoreRequest.getAssessmentScore());
-            score.setYear(scoreRequest.getYear());
+            score.setYear(academicYear.getYear());
             score.setTerm(scoreRequest.getTerm());
             // Save the score
             scoreRepository.save(score);
         }
 
         // After saving the score, calculate the result using a separate service method
-        resultService.calculateResult(scoreRequest.getSubClassId(), student.getId(), subject.getName(), scoreRequest.getYear(), scoreRequest.getTerm());
+        resultService.calculateResult(scoreRequest.getSubClassId(), student.getId(), subject.getName(), academicYear.getYear(), scoreRequest.getTerm());
     }
 
 

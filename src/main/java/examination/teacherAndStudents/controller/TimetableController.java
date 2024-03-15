@@ -28,14 +28,30 @@ public class TimetableController {
     public ResponseEntity<String> createTimetable(@RequestBody TimetableCreationRequest request) {
         Timetable timetable = timetableService.createTimetable(
                 request.getSchoolClassId(),
+                request.getTeacherId(),
                 request.getDayOfWeek(),
                 request.getSubjectSchedules(),
                 request.getTimetableType(),
                 request.getTerm(),
-                request.getYear()
+                request.getYearId()
         );
 
         return ResponseEntity.ok("Timetable created with ID: " + timetable.getId());
+    }
+
+    @PutMapping("/update/{timetableId}")
+    public ResponseEntity<String> updateTimetable(@PathVariable Long timetableId, @RequestBody TimetableCreationRequest request) {
+            Timetable updatedTimetable = timetableService.updateTimetable(
+                    timetableId,
+                    request.getSchoolClassId(),
+                    request.getTeacherId(),
+                    request.getDayOfWeek(),
+                    request.getSubjectSchedules(),
+                    request.getTerm(),
+                    request.getYearId()
+            );
+            return ResponseEntity.ok("Timetable created with ID: " + timetableId);
+
     }
 
     @GetMapping("/{timetableId}")

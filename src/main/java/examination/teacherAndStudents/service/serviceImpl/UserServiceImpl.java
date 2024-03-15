@@ -712,7 +712,7 @@ public class    UserServiceImpl implements UserService {
             Optional<User> studentOptional = userRepository.findByUniqueRegistrationNumber(uniqueRegistrationNumber);
             if (studentOptional.isPresent()) {
                 User student = studentOptional.get();
-                student.setIsVerified(false);
+                student.setDeactivate(true);
                 return userRepository.save(student);
             } else {
                 throw new EntityNotFoundException("Student not found with registration number: " + uniqueRegistrationNumber);

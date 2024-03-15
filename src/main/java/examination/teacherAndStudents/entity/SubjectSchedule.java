@@ -21,6 +21,8 @@ public class SubjectSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String teacher;
+
     @ManyToOne
     @JoinColumn(name = "timetable_id")
     private Timetable timetable;
@@ -38,6 +40,8 @@ public class SubjectSchedule {
 
     @Enumerated(EnumType.STRING)
     private TeachingStatus teachingStatus;
+
+
 
 
     // Getters and setters

@@ -1,8 +1,10 @@
 package examination.teacherAndStudents.controller;
 import examination.teacherAndStudents.dto.StaffRequest;
 import examination.teacherAndStudents.dto.StaffResponse;
+import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +33,8 @@ public class StaffController {
     }
 
     @GetMapping("/findAll")
-    public ResponseEntity<List<StaffResponse>> findAllStaff() {
-        List<StaffResponse> allStaff = staffService.findAllStaff();
+    public ResponseEntity<Page<StaffResponse>> findAllStaff(String searchTerm, int page, int size, String sortBy){
+        Page<StaffResponse> allStaff = staffService.findAllStaff(searchTerm,page, size, sortBy);
         return new ResponseEntity<>(allStaff, HttpStatus.OK);
     }
 
@@ -40,6 +42,12 @@ public class StaffController {
     public ResponseEntity<StaffResponse> findStaffById(@PathVariable Long StaffId) {
         StaffResponse staffById = staffService.findStaffById(StaffId);
         return new ResponseEntity<>(staffById, HttpStatus.OK);
+    }
+
+    @PostMapping("/deactivate/{uniqueRegistrationNumber}")
+    public StaffResponse deactivateStudent(@PathVariable String uniqueRegistrationNumber){
+        return staffService.deactivateStaff(uniqueRegistrationNumber);
+
     }
 
     @DeleteMapping("/delete/{StaffId}")

@@ -56,6 +56,8 @@ public class User {
     private String studentGuardianPhoneNumber;
     private String gender;
 
+    private Boolean deactivate = false;
+
     private String religion;
 
     private Boolean isVerified;
