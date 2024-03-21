@@ -16,6 +16,7 @@ public class VisitorsResponse {
     private Long id;
     private String name;
     private String purpose;
+    private String phoneNumber;
     private LocalDateTime signIn;
     private LocalDateTime signOut;
 }

@@ -1,12 +1,13 @@
 package examination.teacherAndStudents.service;
 
 import examination.teacherAndStudents.dto.MedicalRecordRequest;
+import examination.teacherAndStudents.dto.MedicationDto;
 import examination.teacherAndStudents.entity.MedicalRecord;
 
 import java.util.List;
 
 public interface MedicalRecordService {
-    MedicalRecord addMedicalRecord(Long studentId, MedicalRecordRequest medicalRecordRequest);
-    MedicalRecord updateMedicalRecord(Long recordId, MedicalRecordRequest updatedRecordRequest);
-    List<MedicalRecord> getAllMedicalRecordsByStudent(Long studentId);
+    MedicationDto addMedicalRecord(Long studentId, MedicalRecordRequest medicalRecordRequest);
+    MedicationDto updateMedicalRecord(Long recordId, MedicalRecordRequest updatedRecordRequest);
+    List<MedicationDto> getAllMedicalRecordsByStudent(Long studentId);
 }

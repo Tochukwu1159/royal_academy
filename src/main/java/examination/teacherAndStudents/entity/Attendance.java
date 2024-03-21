@@ -26,7 +26,6 @@ public class Attendance {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Year year;
     @ManyToOne
     @JoinColumn(name = "sub_class_id", nullable = false)
     private SubClass subClass;
@@ -38,7 +37,5 @@ public class Attendance {
     @Column(name = "status", nullable = false)
     private AttendanceStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private StudentTerm term; // Enum for present or absent
 
 }

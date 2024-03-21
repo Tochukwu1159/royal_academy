@@ -11,7 +11,11 @@ import examination.teacherAndStudents.error_handler.CustomNotFoundException;
 import examination.teacherAndStudents.service.AdminService;
 import examination.teacherAndStudents.service.StaffAttendanceService;
 import examination.teacherAndStudents.utils.AccountUtils;
+import examination.teacherAndStudents.utils.StudentTerm;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/admin")
 public class AdminController {
 
     private final AdminService userService;
@@ -103,36 +107,37 @@ public class AdminController {
     }
 
 
-    @GetMapping("/teacher-attendance/search")
-    public ResponseEntity<List<StaffAttendance>> getStaffAttendanceByDateRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<StaffAttendance> attendanceList = teacherAttendanceService.getStaffAttendanceByDateRange(startDate, endDate);
-        return ResponseEntity.ok(attendanceList);
-    }
-
 //    @GetMapping("/teacher-attendance/search")
-//    public ResponseEntity<Page<StaffAttendance>> getStaffAttendanceByDateRange(
+//    public ResponseEntity<List<StaffAttendance>> getStaffAttendanceByDateRange(
 //            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-//            @RequestParam(defaultValue = "0") int pageNo,
-//            @RequestParam(defaultValue = "10") int pageSize,
-//            @RequestParam(defaultValue = "id") String sortBy) {
-//
-//        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
-//        Page<StaffAttendance> attendancePage = teacherAttendanceService.getStaffAttendanceByDateRange(startDate, endDate, paging);
-//        return ResponseEntity.ok(attendancePage);
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+//        List<StaffAttendance> attendanceList = teacherAttendanceService.getStaffAttendanceByDateRange( startDate, endDate);
+//        return ResponseEntity.ok(attendanceList);
 //    }
+
+    @GetMapping("/teacher-attendance/search")
+    public ResponseEntity<Page<StaffAttendance>> getStaffAttendanceByDateRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy) {
+
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
+        Page<StaffAttendance> attendancePage = teacherAttendanceService.getStaffAttendanceByDateRange(startDate, endDate, pageNo, pageSize, sortBy);
+        return ResponseEntity.ok(attendancePage);
+    }
 
     @GetMapping("/search/teacher/date")
     public ResponseEntity<List<StaffAttendance>> getStaffAttendanceByTeacherAndDateRange(
-            @RequestParam Long teacherId,
+            @RequestParam String teacherId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         List<StaffAttendance> attendanceList = teacherAttendanceService.getStaffAttendanceByStaffAndDateRange(teacherId, startDate, endDate);
         return ResponseEntity.ok(attendanceList);
 
     }
+
     @PutMapping("/update-teaching-status")
     public ResponseEntity<SubjectSchedule> updateTeachingStatus(
             @RequestBody SubjectScheduleTeacherUpdateDto updateDto

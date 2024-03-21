@@ -5,6 +5,7 @@ import examination.teacherAndStudents.error_handler.EntityNotFoundException;
 import examination.teacherAndStudents.service.PositionService;
 import examination.teacherAndStudents.service.ResultService;
 import examination.teacherAndStudents.utils.StudentTerm;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Year;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/results")
 public class ResultController {
 
-    @Autowired
-    private ResultService resultService;
-    @Autowired
-    private PositionService positionService;
+    private final ResultService resultService;
+    private final PositionService positionService;
 
     @GetMapping("/calculate/{classLevelId}/{studentId}/{term}/{subjectName}")
     public ResponseEntity<Result> calculateResult(@PathVariable Long classLevelId,@PathVariable Long studentId, @PathVariable String subjectName,  @PathVariable StudentTerm term, @PathVariable Year year) {

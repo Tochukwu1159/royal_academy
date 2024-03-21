@@ -2,6 +2,7 @@ package examination.teacherAndStudents.service.serviceImpl;
 
 
 import examination.teacherAndStudents.dto.MedicalRecordRequest;
+import examination.teacherAndStudents.dto.MedicationDto;
 import examination.teacherAndStudents.entity.MedicalRecord;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
@@ -9,25 +10,31 @@ import examination.teacherAndStudents.error_handler.CustomNotFoundException;
 import examination.teacherAndStudents.repository.MedicalRecordRepository;
 import examination.teacherAndStudents.repository.UserRepository;
 import examination.teacherAndStudents.service.MedicalRecordService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MedicalRecordServiceImpl implements MedicalRecordService {
 
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
+
+
+    private final UserRepository userRepository;
+
+    private final ModelMapper modelMapper;
 
     // Other dependencies and methods
 
-    public MedicalRecord addMedicalRecord(Long studentId, MedicalRecordRequest medicalRecordRequest) {
+    public MedicationDto addMedicalRecord(Long studentId, MedicalRecordRequest medicalRecordRequest) {
         try {
             Optional<User> student = userRepository.findById(studentId);
             if (student == null) {
@@ -41,13 +48,14 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
             // Add any other fields as needed
 
-            return medicalRecordRepository.save(medicalRecord);
+             medicalRecordRepository.save(medicalRecord);
+             return modelMapper.map(medicalRecord, MedicationDto.class);
         } catch (Exception e) {
             throw new CustomInternalServerException("Error adding medical record: " + e.getMessage());
         }
     }
 
-    public MedicalRecord updateMedicalRecord(Long recordId, MedicalRecordRequest updatedRecordRequest) {
+    public MedicationDto updateMedicalRecord(Long recordId, MedicalRecordRequest updatedRecordRequest) {
         try {
             MedicalRecord existingRecord = medicalRecordRepository.findById(recordId)
                     .orElseThrow(() -> new CustomNotFoundException("Medical record not found"));
@@ -57,20 +65,21 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
             existingRecord.setDetails(updatedRecordRequest.getDetails());
             // Update any other fields as needed
 
-            return medicalRecordRepository.save(existingRecord);
+             medicalRecordRepository.save(existingRecord);
+           return modelMapper.map(existingRecord, MedicationDto.class);
         } catch (Exception e) {
             throw new CustomInternalServerException("Error updating medical record: " + e.getMessage());
         }
     }
 
-    public List<MedicalRecord> getAllMedicalRecordsByStudent(Long studentId) {
+    public List<MedicationDto> getAllMedicalRecordsByStudent(Long studentId) {
         try {
             Optional<User> student = userRepository.findById(studentId);
             if (student == null) {
                 throw new CustomNotFoundException("Student not found");
             }
-
-            return medicalRecordRepository.findAllByUser(student);
+            List<MedicalRecord> medicationDtoList = medicalRecordRepository.findAllByUser(student);
+            return medicationDtoList.stream().map((element) -> modelMapper.map(element, MedicationDto.class)).collect(Collectors.toList());
         } catch (Exception e) {
             throw new CustomInternalServerException("Error retrieving medical records: " + e.getMessage());
         }

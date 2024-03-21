@@ -5,6 +5,7 @@ import examination.teacherAndStudents.entity.BookBorrowing;
 import examination.teacherAndStudents.entity.Dormitory;
 import examination.teacherAndStudents.service.LibraryService;
 import examination.teacherAndStudents.utils.AccountUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/library")
 public class LibraryController {
 
-    @Autowired
-    private LibraryService libraryService;
+    private final LibraryService libraryService;
 
     @PostMapping("/addBook")
     public ResponseEntity<Book> addBook(@RequestBody BookRequest book) {
@@ -50,7 +51,7 @@ public class LibraryController {
         }
     }
 
-    @GetMapping("/allBooks")
+    @GetMapping("/all_books")
         public ResponseEntity<Page<Book>> getAllBooks(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
                 @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
                 @RequestParam(defaultValue = "id") String sortBy) {
@@ -62,7 +63,7 @@ public class LibraryController {
         }
     }
 
-    @PostMapping("/borrowBook")
+    @PostMapping("/borrow_book")
     public ResponseEntity<BookBorrowing> borrowBook(@RequestParam String memberId, @RequestParam Long bookId) {
         try {
             BookBorrowing borrowing = libraryService.borrowBook(memberId, bookId);

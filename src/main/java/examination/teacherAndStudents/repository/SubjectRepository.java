@@ -13,5 +13,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     Optional<Subject> findByIdAndTerm(Long subjectId, StudentTerm term);
 
-    Optional<Subject> findByIdAndTermAndYear(Long subjectId, StudentTerm term, Year year);
+
 }

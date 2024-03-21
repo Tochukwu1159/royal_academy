@@ -21,7 +21,7 @@ public class ClassCategoryController {
 
     private final ClassCategoryService classCategoryService;
 
-    @GetMapping
+    @GetMapping("/all")
         public ResponseEntity<Page<ClassCategoryResponse>> getAllRoutes(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
                 @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
                 @RequestParam(defaultValue = "id") String sortBy) {
@@ -39,7 +39,7 @@ public class ClassCategoryController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ClassCategoryResponse> createClassCategory(@RequestBody ClassCategoryRequest classCategoryRequest) {
         try {
             ClassCategoryResponse newClassCategory = classCategoryService.createClassCategory(classCategoryRequest);

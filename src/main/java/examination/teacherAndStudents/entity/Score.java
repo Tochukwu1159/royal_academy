@@ -24,10 +24,6 @@ public class Score {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id")
-    @JsonBackReference
-    private User user;
 
     private int examScore;
     private int assessmentScore;
@@ -35,9 +31,7 @@ public class Score {
     @ManyToOne
     @JoinColumn(name = "classLevel_id")
     @JsonBackReference
-    private SubClass subClass;
-
-    private Year year;
+    private Subject subject;
 
     @Enumerated(EnumType.STRING)
     private StudentTerm term;

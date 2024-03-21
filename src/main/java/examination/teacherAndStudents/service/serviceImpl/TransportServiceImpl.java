@@ -18,6 +18,7 @@ import examination.teacherAndStudents.service.TransportService;
 import examination.teacherAndStudents.utils.Roles;
 import examination.teacherAndStudents.objectMapper.TransportMapper;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,21 +26,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TransportServiceImpl implements TransportService {
 
-    @Autowired
-    private TransportRepository transportRepository;
+    private final TransportRepository transportRepository;
 
-    @Autowired
-    EmailService emailService;
+    private final EmailService emailService;
 
-    @Autowired
-    private TransportMapper transportMapper;
+    private final TransportMapper transportMapper;
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private BusRouteRepository busRouteRepository;
+    private final UserRepository userRepository;
+    private final BusRouteRepository busRouteRepository;
 
     @Override
     public TransportResponse createTransport(TransportRequest transportRequest) {

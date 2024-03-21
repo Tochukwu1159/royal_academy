@@ -26,6 +26,8 @@ import java.util.Set;
     private Long id;
     private String name;
 
+    private String asignedTeacher;
+
     @ManyToOne
     @JoinColumn(name = "subClass_id")
     private SubClass subClass;
@@ -33,5 +35,6 @@ import java.util.Set;
     @Enumerated(EnumType.STRING)
     private StudentTerm term;
 
-    private Year year;
+        @OneToMany(mappedBy = "subject")
+    private  List<Score> scores;
 }

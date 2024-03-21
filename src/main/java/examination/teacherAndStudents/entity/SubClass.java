@@ -21,61 +21,44 @@ public class SubClass {
     @Column(nullable = false)
     private String subClassName;
 
-    private int numberOfStudents;
-    private Year year;
+    private int numberOfStudents = 0;
     @ManyToOne
     @JoinColumn(name = "class_category_id")
     private ClassCategory classCategory;
 
-//    @OneToMany(mappedBy = "classCategory", cascade = CascadeType.ALL)
-//    private List<SubClass> subClasses;
 
     private String classUniqueUrl;
 
     @OneToMany(mappedBy = "subClass")
     private List<Subject> subject;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "form_teacher_id")
     private FormTeacher formTeacher;
 
     @OneToMany(mappedBy = "subClass")
     private  List<AttendancePercent> attendancePercents;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "studentClass")
-    private List<StudentClassLevel> studentClassLevels = new ArrayList<>();
-
-
-//    @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL)
-//    private List<Attendance> attendanceList;
+    @OneToMany(mappedBy = "studentClass", cascade = CascadeType.ALL)
+    private List<User> students;
 
     @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private ClassCategory studentClassLevels;
+
+
+
+    @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL)
+    private List<Attendance> attendanceList;
+
+
+
     @OneToMany(mappedBy = "subClass")
-    private List<StudentRecord> studentRecords = new ArrayList<>();
+    private  List<Result> results;
 
-//    @ManyToMany(cascade = CascadeType.ALL,mappedBy = "subClasses",fetch = FetchType.EAGER)
-//    @JsonIgnore
-//    private Set<User> users;
+    @OneToMany(mappedBy = "subClass")
+    private  List<Position> positions;
 
-
-
-//    @OneToMany(mappedBy = "subClass")
-//    private List<Subject> subject;
-//
-//    @OneToMany(mappedBy = "subClass")
-//    private List<User> user;
-//
-//    @OneToMany(mappedBy = "subClass")
-//    private  List<Score> scores;
-//
-//    @OneToMany(mappedBy = "subClass")
-//    private  List<Result> results;
-//
-//    @OneToMany(mappedBy = "subClass")
-//    private  List<Position> positions;
-//
-//    @OneToMany(mappedBy = "subClass")
-//    private  List<AttendancePercent> attendancePercents;
 }
 

@@ -1,5 +1,6 @@
 package examination.teacherAndStudents.utils;
 
+import examination.teacherAndStudents.error_handler.AuthenticationFailedException;
 import examination.teacherAndStudents.error_handler.BadRequestException;
 import examination.teacherAndStudents.error_handler.UserAlreadyExistException;
 import examination.teacherAndStudents.error_handler.UserPasswordMismatchException;
@@ -7,6 +8,8 @@ import examination.teacherAndStudents.repository.LibraryMemberRepository;
 import examination.teacherAndStudents.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -19,34 +22,6 @@ import java.util.regex.Pattern;
 public class AccountUtils {
     public static final String PAGENO = "0";
     public static final String PAGESIZE = "10";
-    public  static  final String ACCOUNT_EXISTS_CODE ="001";
-    public  static  final String ACCOUNT_NOT_EXIST_CODE ="003";
-    public  static  final String ACCOUNT_EXITS_MESSAGE ="This user already exists";
-    public  static  final String ACCOUNT_NOT_EXIT_MESSAGE ="This user does not exist";
-    public  static  final String ACCOUNT_CREATION_SUCCESS = "002";
-    public  static  final String ACCOUNT_CREATION_MESSAGE = "Account has been created successfully";
-    public static  final  String TRANSFER_SUCCESSFUL_CODE = "008";
-    public static  final  String TRANSFER_SUCCESSFUL_MESSAGE = "Transfer Successful";
-    public static  final  String ACCOUNT_UPDATED_SUCCESS = "010";
-    public static  final  String ACCOUNT_UPDATED_MESSAGE = "Account Updated Successfully";
-    public static  final  String PASSWORD_FORGOT_MAIL_CODE = "011";
-
-    public static  final  String PASSWORD_FORGOT_MAIL_MESSAGE = "Password reset successful kindly check your email";
-    public static  final  String PASSWORD_CHANGED_SUCCESS ="012";
-    public static  final  String PASSWORD_CHANGED_MESSAGE = "User password successfully changed";
-    public static  final  String UPDATE_PASSWORD_SUCCESS = "013";
-    public static  final  String UPDATE_PASSWORD_SUCCESS_MESSAGE="Your password is successfully updated";
-    public static  final  String PASSWORD_DO_NOT_MATCH = "014";
-    public static  final  String PASSWORD_DO_NOT_MATCH_MESSAGE = "Password does not match confirm password";
-    public static  final  String USER_NOT_LOGGED_IN = "015";
-
-    public static  final  String USER_NOT_LOGGED_IN_MESSAGE = "User not logged in";
-    public  static  final String EVENT_WITH_USERS_SUCCESS ="016";
-    public  static  final String EVENT_WITH_USERS_SUCCESS_MESSAGE ="Event and users fetched successfully";
-    public static  final  String FETCH_ALL_USERS_SUCCESSFUL_CODE = "017";
-    public static  final  String FETCH_ALL_USERS_SUCCESSFUL_MESSAGE = "All users fetched Successful";
-    public static final String INTERNAL_SERVER_ERROR_CODE = "018";
-    public static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal server error";
 
     public static final String PAYSTACK_TRANSACTION_INITIALIZER ="https://api.paystack.co/transaction/initialize";
     public static final String ACCOUNT_UPDATE_SUCCESS = "019";
@@ -212,6 +187,15 @@ public class AccountUtils {
         if (password.length() < 8 || confirmPassword.length() < 8) {
             throw new BadRequestException("Password is too short, should be a minimum of 8 characters long");
         }
+    }
+
+
+    public static String getAuthenticatedUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationFailedException("User is not authenticated");
+        }
+        return authentication.getName();
     }
 
     }

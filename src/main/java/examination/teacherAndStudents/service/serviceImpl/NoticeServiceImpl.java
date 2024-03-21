@@ -1,55 +1,57 @@
 package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.Security.SecurityConfig;
-import examination.teacherAndStudents.dto.BlogRequest;
-import examination.teacherAndStudents.entity.SchoolEvent;
+import examination.teacherAndStudents.dto.NoticeRequest;
+import examination.teacherAndStudents.dto.UpdateNoticeRequest;
+import examination.teacherAndStudents.entity.Notice;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.AuthenticationFailedException;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
-import examination.teacherAndStudents.repository.SchoolEventRepository;
+import examination.teacherAndStudents.repository.NoticeRepository;
 import examination.teacherAndStudents.repository.NotificationRepository;
 import examination.teacherAndStudents.repository.TransactionRepository;
 import examination.teacherAndStudents.repository.UserRepository;
-import examination.teacherAndStudents.service.SchoolEventService;
+import examination.teacherAndStudents.service.NoticeService;
 import examination.teacherAndStudents.utils.Roles;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Service
-public class SchoolEventServiceImpl implements SchoolEventService {
+public class NoticeServiceImpl implements NoticeService {
 
-    private final SchoolEventRepository blogRepository;
+    private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final TransactionRepository transactionRepository;
 
-    public SchoolEventServiceImpl(SchoolEventRepository blogRepository, UserRepository userRepository,
-                                  NotificationRepository notificationRepository,
-                                  TransactionRepository transactionRepository) {
-        this.blogRepository = blogRepository;
+    public NoticeServiceImpl(NoticeRepository noticeRepository, UserRepository userRepository,
+                             NotificationRepository notificationRepository,
+                             TransactionRepository transactionRepository) {
+        this.noticeRepository = noticeRepository;
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
         this.transactionRepository = transactionRepository;
     }
 
-    public List<SchoolEvent> getAllBlogPosts() {
+    public List<Notice> getAllNoticePosts() {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
             if (admin == null) {
                 throw new AuthenticationFailedException("Please login as an Admin");
             }
-            return blogRepository.findAll();
+            return noticeRepository.findAll();
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while fetching blog posts " + e.getMessage());
         }
     }
 
-    public SchoolEvent getBlogPostById(Long id) {
+    public Notice getNoticePostById(Long id) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
@@ -57,37 +59,39 @@ public class SchoolEventServiceImpl implements SchoolEventService {
                 throw new AuthenticationFailedException("Please login as an Admin");
             }
 
-            return blogRepository.findById(id)
-                    .orElseThrow(() -> new CustomNotFoundException("Blog post not found with id: " + id));
+            return noticeRepository.findById(id)
+                    .orElseThrow(() -> new CustomNotFoundException("Notice post not found with id: " + id));
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while fetching the blog post " + e.getMessage());
         }
     }
 
 
-    public List<SchoolEvent> getEventsByDateRange(LocalDate startDate, LocalDate endDate) {
-        return blogRepository.findByEventDateBetween(startDate, endDate);
+    public List<Notice> getEventsByDateRange(LocalDate startDate, LocalDate endDate) {
+        return noticeRepository.findByEventDateBetween(startDate, endDate);
     }
 
-    public SchoolEvent createBlogPost(BlogRequest blogPost) {
+    public Notice createNoticePost(NoticeRequest noticeRequest) {
         try {
                 String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
             if (admin == null) {
                 throw new AuthenticationFailedException("Please login as an Admin");
             }
-            SchoolEvent newBlog = new SchoolEvent();
-            newBlog.setSchoolEvent(blogPost.getSchoolEvent());
-            newBlog.setEventDescription(blogPost.getEventDescription());
-            newBlog.setTerm(blogPost.getTerm());
-            newBlog.setEventDate(LocalDate.now());
-            return blogRepository.save(newBlog);
+            Notice newNotice = new Notice();
+            newNotice.setTitle(noticeRequest.getTitle());
+            newNotice.setEventDescription(noticeRequest.getEventDescription());
+            newNotice.setPublishedDate(LocalDate.now());
+            newNotice.setNoticeDate(noticeRequest.getNoticeDate());
+            newNotice.setRoles(noticeRequest.getRole());
+            newNotice.setEventDate(LocalDate.now());
+            return noticeRepository.save(newNotice);
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while creating the blog post " +e.getMessage());
         }
     }
 
-    public SchoolEvent updateBlogPost(Long id, BlogRequest updatedBlogPost) {
+    public Notice updateNoticePost(Long id, UpdateNoticeRequest updatedNoticePost) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
@@ -95,22 +99,25 @@ public class SchoolEventServiceImpl implements SchoolEventService {
                 throw new AuthenticationFailedException("Please login as an Admin");
             }
 
-            SchoolEvent existingBlogPost = blogRepository.findById(id)
-                    .orElseThrow(() -> new CustomNotFoundException("Blog post not found with id: " + id));
+            Notice existingNoticePost = noticeRepository.findById(id)
+                    .orElseThrow(() -> new CustomNotFoundException("Notice post not found with id: " + id));
 
-            existingBlogPost.setSchoolEvent(updatedBlogPost.getSchoolEvent());
-            existingBlogPost.setEventDescription(updatedBlogPost.getEventDescription());
-            existingBlogPost.setEventDate(LocalDate.now());
+            existingNoticePost.setTitle(updatedNoticePost.getTitle());
+            existingNoticePost.setRoles(updatedNoticePost.getRole());
+            existingNoticePost.setUpdateNoticeDate(LocalDate.now());
+            existingNoticePost.setPublishedDate(updatedNoticePost.getPublishedDate());
+            existingNoticePost.setEventDescription(updatedNoticePost.getEventDescription());
+            existingNoticePost.setEventDate(LocalDate.now());
             // You can update other fields as needed
 
-            return blogRepository.save(existingBlogPost);
+            return noticeRepository.save(existingNoticePost);
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while updating the blog post" + e.getMessage());
         }
     }
 
 
-    public boolean deleteBlogPost(Long id) {
+    public boolean deleteNoticePost(Long id) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
@@ -118,13 +125,14 @@ public class SchoolEventServiceImpl implements SchoolEventService {
                 throw new AuthenticationFailedException("Please login as an Admin");
             }
 
-            SchoolEvent existingBlogPost = blogRepository.findById(id)
-                    .orElseThrow(() -> new CustomNotFoundException("Blog post not found with id: " + id));
+            Notice existingNoticePost = noticeRepository.findById(id)
+                    .orElseThrow(() -> new CustomNotFoundException("Notice post not found with id: " + id));
 
-            blogRepository.delete(existingBlogPost);
+            noticeRepository.delete(existingNoticePost);
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while deleting the blog post " +  e.getMessage());
         }
         return false;
     }
+
 }

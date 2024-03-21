@@ -1,5 +1,6 @@
 package examination.teacherAndStudents.controller;
 import examination.teacherAndStudents.dto.MedicalRecordRequest;
+import examination.teacherAndStudents.dto.MedicationDto;
 import examination.teacherAndStudents.entity.MedicalRecord;
 import examination.teacherAndStudents.service.MedicalRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/medical-records")
+@RequestMapping("/api/v1/medical-records")
 public class MedicalRecordController {
 
     private final MedicalRecordService medicalRecordService;
@@ -21,19 +22,19 @@ public class MedicalRecordController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<MedicalRecord> createMedicalRecord(@PathVariable Long studentId, @RequestBody MedicalRecordRequest medicalRecordRequest) {
-        MedicalRecord createdRecord = medicalRecordService.addMedicalRecord(studentId,medicalRecordRequest);
+    public ResponseEntity<MedicationDto> createMedicalRecord(@PathVariable Long studentId, @RequestBody MedicalRecordRequest medicalRecordRequest) {
+        MedicationDto createdRecord = medicalRecordService.addMedicalRecord(studentId,medicalRecordRequest);
         return new ResponseEntity<>(createdRecord, HttpStatus.CREATED);
     }
     @PutMapping("/update")
-    public ResponseEntity<MedicalRecord> updateMedicalRecord(@PathVariable Long studentId, @RequestBody MedicalRecordRequest medicalRecordRequest) {
-        MedicalRecord updatedRecord = medicalRecordService.updateMedicalRecord(studentId,medicalRecordRequest);
+    public ResponseEntity<MedicationDto> updateMedicalRecord(@PathVariable Long studentId, @RequestBody MedicalRecordRequest medicalRecordRequest) {
+        MedicationDto updatedRecord = medicalRecordService.updateMedicalRecord(studentId,medicalRecordRequest);
         return new ResponseEntity<>(updatedRecord, HttpStatus.OK);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<MedicalRecord>> updateMedicalRecord(Long studentId) {
-        List<MedicalRecord> getAllMedicalRecordsByStudent = medicalRecordService.getAllMedicalRecordsByStudent(studentId);
+    public ResponseEntity<List<MedicationDto>> updateMedicalRecord(Long studentId) {
+        List<MedicationDto> getAllMedicalRecordsByStudent = medicalRecordService.getAllMedicalRecordsByStudent(studentId);
         return new ResponseEntity<>(getAllMedicalRecordsByStudent, HttpStatus.OK);
     }
 

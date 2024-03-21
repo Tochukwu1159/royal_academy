@@ -4,6 +4,7 @@ import examination.teacherAndStudents.dto.SubjectScheduleTeacherUpdateDto;
 import examination.teacherAndStudents.entity.SubjectSchedule;
 import examination.teacherAndStudents.entity.StaffAttendance;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,9 +14,9 @@ public interface StaffAttendanceService {
     public void checkOut(String location);
     Page<StaffAttendance> getAllStaffAttendance(int pageNo, int pageSize, String sortBy);
 //    double calculateAttendancePercentage(Long userId, StudentTerm term);
-    List<StaffAttendance> getStaffAttendanceByDateRange(LocalDate startDate, LocalDate endDate);
+    Page<StaffAttendance> getStaffAttendanceByDateRange(LocalDate startDate, LocalDate endDate, int pageNo, int pageSize, String sortBy);
     List<StaffAttendance> getStaffAttendanceByStaffAndDateRange(
-            Long teacherId,
+            String teacherId,
             LocalDate startDate,
             LocalDate endDate);
 

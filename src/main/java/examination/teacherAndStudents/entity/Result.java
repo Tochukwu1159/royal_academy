@@ -29,10 +29,7 @@ public class Result {
     private String rating;
     @Enumerated(EnumType.STRING)
     private StudentTerm term;
-    private Year year;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+
 
     @ManyToOne
     @JoinColumn(name = "classLevel_id")

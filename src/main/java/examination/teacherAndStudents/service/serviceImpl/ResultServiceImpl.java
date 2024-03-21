@@ -50,6 +50,12 @@ public class ResultServiceImpl implements ResultService {
             SubClass studentClass = subClassRepository.findById(subClassLevelId)
                     .orElseThrow(() -> new NotFoundException("Student class not found"));
 
+            List<User> students = studentClass.getStudents();
+
+            Optional<User> desiredStudent = students.stream()
+                    .filter(s -> s.getId().equals(student.getId()))
+                    .findFirst();
+
             // Retrieve the score for the student and subject
             Score score = scoreRepository.findByUserAndSubClassIdAndSubjectNameAndYearAndTerm(student, subClassLevelId, subjectName, year, term);
 
@@ -67,7 +73,6 @@ public class ResultServiceImpl implements ResultService {
                 existingResult.setSubClass(studentClass);
                 existingResult.setGrade(grade);
                 existingResult.setUser(student);
-                existingResult.setYear(year);
                 existingResult.setTerm(term);
                 resultRepository.save(existingResult);
                 return existingResult;
@@ -76,10 +81,8 @@ public class ResultServiceImpl implements ResultService {
             Result result = new Result();
             result.setTotalMarks(totalMarks);
             result.setUser(student);
-            result.setUser(student);
             result.setSubClass(studentClass);
             result.setRating(rating);
-            result.setYear(year);
             result.setSubjectName(subjectName);
             result.setTerm(term);
             result.setGrade(grade);

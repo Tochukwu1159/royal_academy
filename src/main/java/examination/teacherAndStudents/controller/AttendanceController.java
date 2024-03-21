@@ -2,6 +2,7 @@ package examination.teacherAndStudents.controller;
 
 import examination.teacherAndStudents.dto.AttendancePercentageRequest;
 import examination.teacherAndStudents.dto.AttendanceRequest;
+import examination.teacherAndStudents.dto.AttendanceResponse;
 import examination.teacherAndStudents.entity.Attendance;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
 import examination.teacherAndStudents.service.AttendanceService;
@@ -36,8 +37,8 @@ public class AttendanceController {
         }
     }
 
-    @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<Attendance>> getStudentAttendance(
+    @GetMapping("/students/{studentId}")
+    public ResponseEntity<AttendanceResponse> getStudentAttendance(
             @PathVariable Long studentId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {

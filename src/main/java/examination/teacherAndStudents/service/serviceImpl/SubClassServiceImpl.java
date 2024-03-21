@@ -63,7 +63,6 @@ public class SubClassServiceImpl implements SubClassService {
                 SubClass newSubClass = new SubClass();
                 newSubClass.setSubClassName(subClassRequest.getSubClassName());
                 newSubClass.setNumberOfStudents(subClassRequest.getNumberOfStudents());
-                newSubClass.setYear(subClassRequest.getYear());
                 newSubClass.setClassUniqueUrl(subClassRequest.getClassUniqueUrl());
                 newSubClass.setClassCategory(existingCategory.get());
                 SubClass savedSubClass = subClassRepository.save(newSubClass);
@@ -84,7 +83,6 @@ public class SubClassServiceImpl implements SubClassService {
                 SubClass existingSubClass = optionalExistingSubClass.get();
                 existingSubClass.setSubClassName(subClassRequest.getSubClassName());
                 existingSubClass.setNumberOfStudents(subClassRequest.getNumberOfStudents());
-                existingSubClass.setYear(subClassRequest.getYear());
                 existingSubClass.setClassUniqueUrl(subClassRequest.getClassUniqueUrl());
                 SubClass updatedSubClass = subClassRepository.save(existingSubClass);
                 return mapToSubClassResponse(updatedSubClass);
@@ -119,7 +117,7 @@ public class SubClassServiceImpl implements SubClassService {
                     .orElseThrow(() -> new NotFoundException("Teacher not found"));
 
             FormTeacher formTeacher = new FormTeacher();
-            formTeacher.setSubClass(Set.of(subClass));
+            formTeacher.setSubClass(subClass);
 
             formTeacher.setActive(true);
             FormTeacher savedFormTeacher = formTeacherRepository.save(formTeacher);
@@ -174,7 +172,6 @@ public class SubClassServiceImpl implements SubClassService {
         subClassResponse.setId(subClass.getId());
         subClassResponse.setSubClassName(subClass.getSubClassName());
         subClassResponse.setNumberOfStudents(subClass.getNumberOfStudents());
-        subClassResponse.setYear(subClass.getYear());
         subClassResponse.setClassUniqueUrl(subClass.getClassUniqueUrl());
         return subClassResponse;
     }

@@ -21,6 +21,8 @@ public class Visitors {
 
     @Column(name = "name")
     private String name;
+    @Column(name = "phoneNumber")
+    private String phoneNumber;
 
     @Column(name = "purpose")
     private String purpose;

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/academic-years")
+@RequestMapping("/api/v1/academic-years")
 public class AcademicYearController {
 
     private final AcademicYearService academicYearService;
@@ -18,7 +18,7 @@ public class AcademicYearController {
         this.academicYearService = academicYearService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<AcademicYearResponse> createAcademicYear(@RequestBody AcademicYearRequest request) {
         AcademicYearResponse response = academicYearService.createAcademicYear(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

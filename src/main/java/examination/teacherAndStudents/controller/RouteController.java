@@ -5,6 +5,7 @@ import examination.teacherAndStudents.dto.RouteResponse;
 import examination.teacherAndStudents.dto.SickLeaveDTO;
 import examination.teacherAndStudents.service.BusRouteService;
 import examination.teacherAndStudents.utils.AccountUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/routes")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/routes")
 public class RouteController {
 
-    @Autowired
     private BusRouteService routeService;
 
     @PostMapping

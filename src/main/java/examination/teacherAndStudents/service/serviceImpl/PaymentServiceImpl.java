@@ -9,6 +9,7 @@ import examination.teacherAndStudents.service.EmailService;
 import examination.teacherAndStudents.service.PaymentService;
 import examination.teacherAndStudents.utils.*;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -20,26 +21,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private EmailService emailService;
+    private final UserRepository userRepository;
 
 
-    @Autowired
-    private WalletRepository walletRepository;
+    private final EmailService emailService;
 
-    @Autowired
-    private DueRepository dueRepository;
-    @Autowired
-    private TransactionRepository transactionRepository;
-    @Autowired
-    private NotificationRepository notificationRepository;
-    @Autowired
-    private DuesRepository duesRepository;
+
+
+    private final WalletRepository walletRepository;
+
+
+    private final DueRepository dueRepository;
+
+    private final TransactionRepository transactionRepository;
+
+    private final NotificationRepository notificationRepository;
+
+    private final DuesRepository duesRepository;
 
 
     @Transactional
@@ -139,7 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
         duesRepository.save(dues);
     }
 
-    private boolean adminReviewPassed(Dues dues) {
+    private  boolean adminReviewPassed(Dues dues) {
         byte[] receiptPhoto = dues.getReceiptPhoto();
         if (receiptPhoto == null || receiptPhoto.length == 0) {
             return false;

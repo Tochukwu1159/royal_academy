@@ -9,6 +9,7 @@ import examination.teacherAndStudents.error_handler.NotFoundException;
 import examination.teacherAndStudents.repository.*;
 import examination.teacherAndStudents.service.TimetableService;
 import examination.teacherAndStudents.utils.*;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +24,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TimetableServiceImpl implements TimetableService {
     private static final Logger log = LoggerFactory.getLogger(TimetableServiceImpl.class);
 
-    @Autowired
-        private TimetableRepository timetableRepository;
+    private final TimetableRepository timetableRepository;
 
-    @Autowired
-    private SubjectRepository subjectRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SubjectScheduleRepository subjectScheduleRepository;
-    @Autowired
-    private SubClassRepository subClassRepository;
-    @Autowired
-    private AcademicYearRepository academicYearRepository;
+    private final SubjectRepository subjectRepository;
+    private final UserRepository userRepository;
+    private final SubjectScheduleRepository subjectScheduleRepository;
+    private final SubClassRepository subClassRepository;
+    private final AcademicYearRepository academicYearRepository;
 
     @Transactional
         @Override

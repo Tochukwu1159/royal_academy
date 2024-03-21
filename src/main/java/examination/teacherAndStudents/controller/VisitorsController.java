@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/visitors")
+@RequestMapping("/api/v1/visitors")
 public class VisitorsController {
 
     private final VisitorsService visitorsService;

@@ -17,7 +17,7 @@ public class ClassCategory {
     @Column(nullable = false, unique = true)
     private String categoryName;
 
-    @OneToMany(mappedBy = "classCategory", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "studentClassLevels", cascade = CascadeType.ALL)
     private List<SubClass> subClasses;
 
     @ManyToOne

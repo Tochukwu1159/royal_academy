@@ -3,18 +3,14 @@ package examination.teacherAndStudents.service.serviceImpl;
 import examination.teacherAndStudents.dto.FeeGroupRequest;
 import examination.teacherAndStudents.dto.FeeGroupResponse;
 import examination.teacherAndStudents.entity.FeeGroup;
-import examination.teacherAndStudents.entity.Feedback;
 import examination.teacherAndStudents.repository.FeeGroupRepository;
 import examination.teacherAndStudents.service.FeeGroupService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

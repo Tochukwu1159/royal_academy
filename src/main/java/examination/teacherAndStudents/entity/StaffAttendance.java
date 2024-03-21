@@ -21,7 +21,7 @@ public class StaffAttendance {
     private Long id;
 
     @Column(nullable = false)
-    private Long teacherId;
+    private String staffUniqueRegNumber;
 
     @Column(nullable = false)
     private LocalDateTime checkInTime;

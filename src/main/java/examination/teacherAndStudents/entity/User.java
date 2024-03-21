@@ -83,9 +83,6 @@ public class User {
     private String subjectAssigned;
 
     @OneToMany(mappedBy = "user")
-    private List<Score> score;
-
-    @OneToMany(mappedBy = "user")
     private List<Transaction> transactions;
     @JsonManagedReference
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
@@ -97,30 +94,15 @@ public class User {
 
 
     @OneToMany(mappedBy = "user")
-    private  List<Result> results;
-
-    @OneToMany(mappedBy = "user")
-    private List<Position> positions;
-    @OneToMany(mappedBy = "user")
-    private  List<Score> scores;
-
-    @OneToMany(mappedBy = "user")
-    private  List<AttendancePercent> attendancePercents;
-
-    @OneToMany(mappedBy = "user")
     private  List<StaffAttendancePercent> staffAttendancePercents;
 
     @OneToMany(mappedBy = "user")
     private  List<MedicalRecord> medicalRecords;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user")
-    private List<StudentClassLevel> studentClassLevels = new ArrayList<>();
 
-//    @JsonBackReference
-//    @OneToMany()
-//    @JoinColumn(name = "user_subclass")
-//    private List<SubClass> studentClassLevels;
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private SubClass studentClass;
 
     @ManyToOne
     @JoinColumn(name = "hostel_id")

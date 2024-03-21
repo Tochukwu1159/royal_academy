@@ -16,6 +16,7 @@ public class VisitorsRequest {
     private String name;
     private String purpose;
     private LocalDateTime signIn;
+    private String phoneNumber;
 
     private LocalDateTime signOut;
 }

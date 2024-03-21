@@ -1,8 +1,10 @@
 package examination.teacherAndStudents.controller;
 
-import examination.teacherAndStudents.dto.BlogRequest;
-import examination.teacherAndStudents.entity.SchoolEvent;
-import examination.teacherAndStudents.service.SchoolEventService;
+
+import examination.teacherAndStudents.dto.NoticeRequest;
+import examination.teacherAndStudents.dto.UpdateNoticeRequest;
+import examination.teacherAndStudents.entity.Notice;
+import examination.teacherAndStudents.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +14,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/blog")
-public class SchoolEventController {
+@RequestMapping("/api/v1/notice")
+public class NoticeController {
 
-    private final SchoolEventService blogService;
+    private final NoticeService blogService;
 
     @Autowired
-    public SchoolEventController(SchoolEventService blogService) {
+    public NoticeController(NoticeService blogService) {
         this.blogService = blogService;
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<SchoolEvent>> getAllBlogPosts() {
+    public ResponseEntity<List<Notice>> getAllNoticePosts() {
         try {
-            List<SchoolEvent> blogPosts = blogService.getAllBlogPosts();
+            List<Notice> blogPosts = blogService.getAllNoticePosts();
             return ResponseEntity.ok(blogPosts);
         } catch (Exception e) {
             // Handle unexpected exceptions
@@ -33,10 +35,10 @@ public class SchoolEventController {
         }
     }
 
-    @GetMapping("/posts/{id}")
-    public ResponseEntity<SchoolEvent> getBlogPostById(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Notice> getNoticePostById(@PathVariable Long id) {
         try {
-            SchoolEvent blogPost = blogService.getBlogPostById(id);
+            Notice blogPost = blogService.getNoticePostById(id);
             if (blogPost != null) {
                 return ResponseEntity.ok(blogPost);
             } else {
@@ -49,30 +51,30 @@ public class SchoolEventController {
     }
 
     @GetMapping("/date-range")
-    public ResponseEntity<List<SchoolEvent>> getEventsByDateRange(
+    public ResponseEntity<List<Notice>> getEventsByDateRange(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate) {
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);
-        List<SchoolEvent> events = blogService.getEventsByDateRange(start, end);
+        List<Notice> events = blogService.getEventsByDateRange(start, end);
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
-    @PostMapping("/posts")
-    public ResponseEntity<SchoolEvent> createBlogPost(@RequestBody BlogRequest blogPost) {
+    @PostMapping("/create")
+    public ResponseEntity<Notice> createNoticePost(@RequestBody NoticeRequest blogPost) {
         try {
-            SchoolEvent createdBlogPost = blogService.createBlogPost(blogPost);
-            return ResponseEntity.ok(createdBlogPost);
+            Notice createdNoticePost = blogService.createNoticePost(blogPost);
+            return ResponseEntity.ok(createdNoticePost);
         } catch (Exception e) {
             // Handle unexpected exceptions
             return ResponseEntity.status(500).build();
         }
     }
 
-    @PutMapping("/posts/{id}")
-    public ResponseEntity<SchoolEvent> updateBlogPost(@PathVariable Long id, @RequestBody BlogRequest updatedBlogPost) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Notice> updateNoticePost(@PathVariable Long id, @RequestBody UpdateNoticeRequest updatedNoticePost) {
         try {
-            SchoolEvent updatedPost = blogService.updateBlogPost(id, updatedBlogPost);
+            Notice updatedPost = blogService.updateNoticePost(id, updatedNoticePost);
             if (updatedPost != null) {
                 return ResponseEntity.ok(updatedPost);
             } else {
@@ -84,10 +86,10 @@ public class SchoolEventController {
         }
     }
 
-    @DeleteMapping("/posts/{id}")
-    public ResponseEntity<Void> deleteBlogPost(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNoticePost(@PathVariable Long id) {
         try {
-            boolean deleted = blogService.deleteBlogPost(id);
+            boolean deleted = blogService.deleteNoticePost(id);
             if (deleted) {
                 return ResponseEntity.noContent().build();
             } else {

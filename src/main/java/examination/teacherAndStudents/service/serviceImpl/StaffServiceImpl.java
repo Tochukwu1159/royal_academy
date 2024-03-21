@@ -11,6 +11,7 @@ import examination.teacherAndStudents.repository.UserRepository;
 import examination.teacherAndStudents.service.StaffService;
 import examination.teacherAndStudents.utils.AccountUtils;
 import examination.teacherAndStudents.utils.Roles;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class StaffServiceImpl implements StaffService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private StaffMapper staffMapper;
+    private final StaffMapper staffMapper;
 
     // Create (Add)  staff
     public StaffResponse createStaff(StaffRequest staffRequest) {

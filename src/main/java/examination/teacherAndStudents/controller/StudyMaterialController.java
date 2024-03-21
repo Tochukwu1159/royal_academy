@@ -35,13 +35,14 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/materials")
 public class StudyMaterialController {
     @Value("${google.drive.folder.id}")
     private String googleDriveFolderId;
 
-    @Autowired
-    private StudyMaterialService studyMaterialService;
+
+    private final StudyMaterialService studyMaterialService;
 
     @GetMapping
     public ResponseEntity<List<StudyMaterial>> getAllMaterials() {

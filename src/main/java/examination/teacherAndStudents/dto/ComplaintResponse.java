@@ -1,6 +1,6 @@
 package examination.teacherAndStudents.dto;
 
-import examination.teacherAndStudents.entity.Feedback;
+import examination.teacherAndStudents.entity.Complaint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class FeedbackResponse {
+public class ComplaintResponse {
 
     private Long id;
     private String feedbackText;
@@ -19,11 +19,11 @@ public class FeedbackResponse {
 
     // Constructors, getters, and setters...
 
-    public static FeedbackResponse fromFeedback(Feedback feedback) {
-        FeedbackResponse response = new FeedbackResponse();
-        response.setId(feedback.getId());
-        response.setFeedbackText(feedback.getFeedbackText());
-        response.setSubmittedTime(feedback.getSubmittedTime());
+    public static ComplaintResponse fromComplaint(Complaint complaint) {
+        ComplaintResponse response = new ComplaintResponse();
+        response.setId(complaint.getId());
+        response.setFeedbackText(complaint.getFeedbackText());
+        response.setSubmittedTime(complaint.getSubmittedTime());
         // Map other fields...
         return response;
     }

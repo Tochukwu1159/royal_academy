@@ -10,6 +10,7 @@ import examination.teacherAndStudents.utils.AttendanceStatus;
 import examination.teacherAndStudents.utils.Roles;
 import examination.teacherAndStudents.utils.TeachingStatus;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,22 +23,18 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class StaffAttendanceServiceImpl implements StaffAttendanceService {
-    @Autowired
-    private StaffAttendanceRepository staffAttendanceRepository;
+    private final StaffAttendanceRepository staffAttendanceRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private SubjectScheduleRepository subjectScheduleRepository;
-    @Autowired
-    private TimetableRepository timetableRepository;
-    @Autowired
-    private AttendancePercentRepository attendancePercentRepository;
-    @Autowired
-    private StaffAttendancePercentRepository staffAttendancePercentRepository;
+    private final UserRepository userRepository;
+    private final SubjectScheduleRepository subjectScheduleRepository;
+    private final TimetableRepository timetableRepository;
+    private final AttendancePercentRepository attendancePercentRepository;
+    private final StaffAttendancePercentRepository staffAttendancePercentRepository;
 
 
     public void checkIn(String location) {
@@ -65,7 +62,7 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
             }
 
             StaffAttendance attendance = new StaffAttendance();
-            attendance.setTeacherId(staff.getId());
+            attendance.setStaffUniqueRegNumber(staff.getUniqueRegistrationNumber());
             attendance.setCheckInTime(checkInTime);
             attendance.setCheckInLocation(location);
             attendance.setUser(staff);
@@ -137,8 +134,9 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
         }
     }
 
+
     @Override
-    public List<StaffAttendance> getStaffAttendanceByDateRange(LocalDate startDate, LocalDate endDate) {
+    public Page<StaffAttendance> getStaffAttendanceByDateRange(LocalDate startDate, LocalDate endDate, int pageNo, int pageSize, String sortBy) {
         try {
             if (startDate == null || endDate == null) {
                 throw new IllegalArgumentException("Start date and end date cannot be null");
@@ -148,8 +146,9 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
             }
             LocalDateTime startDateTime = startDate.atStartOfDay();
             LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+            Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
 
-            return staffAttendanceRepository.findByCheckInTimeBetween(startDateTime, endDateTime);
+            return staffAttendanceRepository.findAllByCheckInTimeBetween( startDateTime, endDateTime, paging);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Error occurred: " + e.getMessage());
         } catch (Exception e) {
@@ -158,8 +157,10 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
     }
 
 
+
+
     public List<StaffAttendance> getStaffAttendanceByStaffAndDateRange(
-            Long staffId,
+            String staffId,
             LocalDate startDate,
             LocalDate endDate) {
         try {
@@ -172,12 +173,12 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
             LocalDateTime startDateTime = startDate.atStartOfDay();
             LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
             // Fetch teacher by ID
-            User staff = userRepository.findByIdAndRoles(staffId, Roles.TEACHER);
+            Optional<User> staff = userRepository.findByUniqueRegistrationNumber(staffId);
             if (staff == null) {
                 throw new EntityNotFoundException("Teacher not found with ID: " + staffId);
             }
             // Fetch teacher attendance records
-            return staffAttendanceRepository.findByUserIdAndCheckInTimeBetween(staffId, startDateTime, endDateTime);
+            return staffAttendanceRepository.findAllByStaffUniqueRegNumberAndAndCheckInTimeBetween(staffId, startDateTime, endDateTime);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Error occurred: " + e.getMessage());
         } catch (EntityNotFoundException e) {

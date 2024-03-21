@@ -5,6 +5,7 @@ import examination.teacherAndStudents.entity.SubClass;
 import examination.teacherAndStudents.error_handler.EntityNotFoundException;
 import examination.teacherAndStudents.service.PositionService;
 import examination.teacherAndStudents.utils.StudentTerm;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,11 @@ import java.time.Year;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/position")
 public class PositionController {
 
-    @Autowired
-    private PositionService positionService;
+    private final PositionService positionService;
 
 
     @GetMapping("/update-all/{classLevelId}/{term}")

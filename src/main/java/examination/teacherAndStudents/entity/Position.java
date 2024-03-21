@@ -38,7 +38,7 @@ import java.util.Objects;
 
     @Enumerated(EnumType.STRING)
     private StudentTerm term;
-    private Year year;
+
 
 
     @Override

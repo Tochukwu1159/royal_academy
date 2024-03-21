@@ -1,6 +1,9 @@
 package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.dto.AttendanceRequest;
+import examination.teacherAndStudents.dto.AttendanceResponse;
+import examination.teacherAndStudents.dto.StudentAttendanceDTO;
+import examination.teacherAndStudents.dto.UserDto;
 import examination.teacherAndStudents.entity.*;
 import examination.teacherAndStudents.error_handler.AttendanceAlreadyTakenException;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
@@ -9,56 +12,72 @@ import examination.teacherAndStudents.repository.*;
 import examination.teacherAndStudents.service.AttendanceService;
 import examination.teacherAndStudents.utils.AttendanceStatus;
 import examination.teacherAndStudents.utils.StudentTerm;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
 
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private AttendanceRepository attendanceRepository;
-    @Autowired
-    private AttendancePercentRepository attendancePercentRepository;
-    @Autowired
-    private SubClassRepository subClassRepository;
+    private final UserRepository userRepository;
 
+
+    private final AttendanceRepository attendanceRepository;
+
+    private final AttendancePercentRepository attendancePercentRepository;
+
+    private final  SubClassRepository subClassRepository;
+
+    private final AcademicYearRepository academicYearRepository;
+
+    private final ClassCategoryRepository studentClassLevelRepository;
+
+    private final ModelMapper modelMapper;
+
+@Override
     public void takeAttendance(AttendanceRequest attendanceRequest) {
         try {
-            // Retrieve the student from the database
-            User student = userRepository.findById(attendanceRequest.getStudentId())
-                    .orElseThrow(() -> new CustomNotFoundException("Student not found with ID: " + attendanceRequest.getStudentId()));
-            SubClass studentClass = subClassRepository.findById(attendanceRequest.getClassLevelId())
-                    .orElseThrow(() -> new CustomNotFoundException("Class not found with ID: " + attendanceRequest.getClassLevelId()));
+                        AcademicYear studentAcademicYear = academicYearRepository.findById(attendanceRequest.getAcademicYearId())
+                    .orElseThrow(() -> new CustomNotFoundException("Student academic year not found"));
+
+            ClassCategory studentClassLevel = studentClassLevelRepository.findByIdAndAcademicYear(attendanceRequest.getClassLevelId(), studentAcademicYear);
+
+            SubClass studentClass = subClassRepository.findByIdAndClassCategory(attendanceRequest.getSubClassId(),studentClassLevel);
+
+            // Retrieve students based on class and subclass
+            List<User> students = studentClass.getStudents();
 
 
-            // Check if attendance for the given date and student already exists
-            Attendance existingAttendance = attendanceRepository.findByUserAndDate(student, attendanceRequest.getDate());
+            // Prepare a list to hold the attendance records
+            List<Attendance> attendanceList = new ArrayList<>();
 
-
-            if (existingAttendance != null) {
-                // Attendance for the given date already exists, throw a custom exception
-                throw new AttendanceAlreadyTakenException("Attendance for date " + attendanceRequest.getDate() + " already taken for student ID: " + student.getId());
-        } else {
-                // Create a new attendance entry
+            // Iterate through the list of students to handle attendance
+            for (User student : students) {
                 Attendance attendance = new Attendance();
                 attendance.setUser(student);
-                attendance.setTerm(attendanceRequest.getStudentTerm());
-                attendance.setYear(attendanceRequest.getYear());
                 attendance.setSubClass(studentClass);
                 attendance.setDate(attendanceRequest.getDate());
+                // Set the attendance status based on the request
                 attendance.setStatus(attendanceRequest.getStatus());
-                attendanceRepository.save(attendance);
+
+                // Add the attendance record to the list
+                attendanceList.add(attendance);
             }
 
-            // After recording attendance, update the attendance percentage
-            calculateAttendancePercentage(student.getId(), studentClass.getId(), attendanceRequest.getStudentTerm());
+            // Save the attendance records in bulk
+            attendanceRepository.saveAll(attendanceList);
 
         } catch (CustomNotFoundException e) {
             // Handle not found exception
@@ -70,15 +89,43 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
 
+    @Override
 
-    public List<Attendance> getStudentAttendance(Long studentId, LocalDate startDate, LocalDate endDate) {
+    public AttendanceResponse getStudentAttendance(Long studentId, LocalDate startDate, LocalDate endDate) {
         try {
             // Retrieve the student from the database
             User student = userRepository.findById(studentId)
                     .orElseThrow(() -> new CustomNotFoundException("Student not found with ID: " + studentId));
 
-            // Retrieve attendance records for the student within the specified date range
-            return attendanceRepository.findByUserAndDateBetween(student, startDate, endDate);
+            // Retrieve all attendance records for the student within the specified date range
+            List<Attendance> attendanceRecords = attendanceRepository.findByUserAndDateBetween(student, startDate, endDate);
+
+            // Calculate number of days present and absent
+            long daysPresent = attendanceRecords.stream()
+                    .filter(attendance -> attendance.getStatus() == AttendanceStatus.PRESENT)
+                    .count();
+            long daysAbsent = attendanceRecords.size() - daysPresent;
+
+            // Calculate percentage attendance
+            double totalAttendanceDays = ChronoUnit.DAYS.between(startDate, endDate) + 1; // Adding 1 to include endDate
+            double percentageAttendance = (daysPresent / totalAttendanceDays) * 100;
+
+            Double roundedPercentage = (double) Math.round(percentageAttendance);
+
+            // Group attendance records by day of the week
+            Map<DayOfWeek, List<Attendance>> attendanceByDayOfWeek = attendanceRecords.stream()
+                    .collect(Collectors.groupingBy(attendance -> attendance.getDate().getDayOfWeek()));
+
+            // Construct the AttendanceResponse
+            AttendanceResponse response = new AttendanceResponse();
+            response.setStudentName(student.getFirstName() + student.getLastName());
+            response.setStudentId(studentId);
+            response.setDaysPresent(daysPresent);
+            response.setDaysAbsent(daysAbsent);
+            response.setPercentageAttendance(roundedPercentage);
+            response.setAttendanceByDayOfWeek(attendanceByDayOfWeek);
+
+            return response;
         } catch (CustomNotFoundException e) {
             // Handle custom not found exception
             throw e;
@@ -87,23 +134,23 @@ public class AttendanceServiceImpl implements AttendanceService {
             throw new CustomInternalServerException("Error getting student attendance: " + e.getMessage());
         }
     }
-
-    public List<Attendance> getAllStudentsAttendance(Long studentId, LocalDate startDate, LocalDate endDate) {
-        try {
-            // Retrieve the student from the database
-            User student = userRepository.findById(studentId)
-                    .orElseThrow(() -> new CustomNotFoundException("Student not found with ID: " + studentId));
-
-            // Retrieve attendance records for the student within the specified date range
-            return attendanceRepository.findByUserAndDateBetween(student, startDate, endDate);
-        } catch (CustomNotFoundException e) {
-            // Handle custom not found exception
-            throw e;
-        } catch (Exception e) {
-            // Handle other exceptions
-            throw new CustomInternalServerException("Error getting student attendance: " + e.getMessage());
-        }
-    }
+//    @Override
+//    public List<Attendance> getAllStudentsAttendance(Long studentId, LocalDate startDate, LocalDate endDate) {
+//        try {
+//            // Retrieve the student from the database
+//            User student = userRepository.findById(studentId)
+//                    .orElseThrow(() -> new CustomNotFoundException("Student not found with ID: " + studentId));
+//
+//            // Retrieve attendance records for the student within the specified date range
+//            return attendanceRepository.findByUserAndDateBetween(student, startDate, endDate);
+//        } catch (CustomNotFoundException e) {
+//            // Handle custom not found exception
+//            throw e;
+//        } catch (Exception e) {
+//            // Handle other exceptions
+//            throw new CustomInternalServerException("Error getting student attendance: " + e.getMessage());
+//        }
+//    }
 
 //    public List<Attendance> getStudentAttendanceByClass(Long classId, LocalDate startDate, LocalDate endDate) {
 //        try {
@@ -114,7 +161,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 //            throw new CustomInternalServerException("Error getting student attendance by class: " + e.getMessage());
 //        }
 //    }
-
+@Override
     public double calculateAttendancePercentage(Long userId, Long classLevelId, StudentTerm studentTerm) {
         try {
             Optional<User> optionalStudent = userRepository.findById(userId);

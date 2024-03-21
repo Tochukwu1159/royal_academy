@@ -36,7 +36,7 @@ public class UserRequestDto {
     @NotEmpty(message = "Confirm Password cannot be empty")
     private String confirmPassword;
     @NotNull(message = "Email is required")
-    @Email
+    @Email(message = "Invalid email format")
     private String email;
     private Year year;
     @NotNull(message = "Phone Number is required")
@@ -48,6 +48,8 @@ public class UserRequestDto {
     private SubClass classAssigned;
     private  String address;
     private String age;
+    private Long classCategoryId;
+    private Long subClassId;
 
     private String studentGuardianName;
     private String studentGuardianPhoneNumber;

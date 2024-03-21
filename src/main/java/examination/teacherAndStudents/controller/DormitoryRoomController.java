@@ -3,7 +3,11 @@ package examination.teacherAndStudents.controller;
 import examination.teacherAndStudents.dto.ClassCategoryResponse;
         import examination.teacherAndStudents.dto.DormitoryRoomRequest;
         import examination.teacherAndStudents.dto.DormitoryRoomResponse;
-        import examination.teacherAndStudents.service.DormitoryRoomService;
+import examination.teacherAndStudents.entity.Dormitory;
+import examination.teacherAndStudents.error_handler.CustomNotFoundException;
+import examination.teacherAndStudents.error_handler.InsufficientBalanceException;
+import examination.teacherAndStudents.error_handler.NotFoundException;
+import examination.teacherAndStudents.service.DormitoryRoomService;
         import examination.teacherAndStudents.utils.AccountUtils;
         import lombok.RequiredArgsConstructor;
         import org.springframework.data.domain.Page;
@@ -21,8 +25,8 @@ public class DormitoryRoomController {
 
     private final DormitoryRoomService dormitoryService;
 
-    @GetMapping
-        public ResponseEntity<Page<DormitoryRoomResponse>> getAllDormitorys(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
+    @GetMapping("/all")
+        public ResponseEntity<Page<DormitoryRoomResponse>> getAllDormitories(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
                 @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
                 @RequestParam(defaultValue = "id") String sortBy) {
         Page<DormitoryRoomResponse> dormitories = dormitoryService.getAllDormitoryRooms(pageNo, pageSize, sortBy);
@@ -53,37 +57,37 @@ public class DormitoryRoomController {
         return ResponseEntity.ok("Dormitory deleted successfully");
     }
 
-//    @PostMapping("/addStudent")
-//    public ResponseEntity<String> addStudentToDormitory(@RequestParam Long studentId, @RequestParam Long dormitoryId) {
-//        dormitoryService.addStudentToDormitory(studentId, dormitoryId);
-//        return ResponseEntity.ok("Student added to dormitory successfully");
-//    }
-//
-//
-//    @GetMapping("/available")
-//    public ResponseEntity<List<DormitoryRoomResponse>> getAllAvailableDormitoryRooms() {
-//        try {
-//            List<Dormitory> availableDormitories = dormitoryService.getAllAvailableDormitoryRooms();
-//            return new ResponseEntity<>(availableDormitories, HttpStatus.OK);
-//        } catch (CustomNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Return unauthorized status for non-admin users
-//        } catch (RuntimeException e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//    @PostMapping("/pay")
-//    public ResponseEntity<String> payForDormitory(@RequestParam Long dormitoryId) {
-//        try {
-//            dormitoryService.payForDormitory(dormitoryId);
-//            return ResponseEntity.ok("Payment successful");
-//        } catch (InsufficientBalanceException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient funds");
-//        } catch (NotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No available beds");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing payment");
-//        }
-//    }
+    @PostMapping("/addStudent")
+    public ResponseEntity<String> addStudentToDormitory(@RequestParam Long studentId, @RequestParam Long dormitoryId) {
+        dormitoryService.addStudentToDormitory(studentId, dormitoryId);
+        return ResponseEntity.ok("Student added to dormitory successfully");
+    }
+
+
+    @GetMapping("/available")
+    public ResponseEntity<List<DormitoryRoomResponse>> getAllAvailableDormitoryRooms() {
+        try {
+            List<DormitoryRoomResponse> availableDormitories = dormitoryService.getAllAvailableDormitoryRooms();
+            return new ResponseEntity<>(availableDormitories, HttpStatus.OK);
+        } catch (CustomNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Return unauthorized status for non-admin users
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/pay")
+    public ResponseEntity<String> payForDormitory(@RequestParam Long dormitoryId) {
+        try {
+            dormitoryService.payForDormitory(dormitoryId);
+            return ResponseEntity.ok("Payment successful");
+        } catch (InsufficientBalanceException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient funds");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No available beds");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing payment");
+        }
+    }
 
 }

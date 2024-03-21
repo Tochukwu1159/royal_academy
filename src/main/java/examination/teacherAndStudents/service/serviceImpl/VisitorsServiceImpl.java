@@ -25,8 +25,8 @@ public class VisitorsServiceImpl implements VisitorsService {
         try {
             Visitors visitor = new Visitors();
             visitor.setName(request.getName());
-
             visitor.setPurpose(request.getPurpose());
+            visitor.setPhoneNumber(request.getPhoneNumber());
             visitor.setSignIn(request.getSignIn());
             visitor.setSignOut(request.getSignOut());
             Visitors savedVisitor = visitorsRepository.save(visitor);
@@ -43,6 +43,7 @@ public class VisitorsServiceImpl implements VisitorsService {
                     .orElseThrow(() -> new NotFoundException("Visitor not found"));
             visitor.setName(request.getName());
             visitor.setSignIn(request.getSignIn());
+            visitor.setPhoneNumber(request.getPhoneNumber());
             visitor.setSignOut(request.getSignOut());
             visitor.setPurpose(request.getPurpose());
             Visitors updatedVisitor = visitorsRepository.save(visitor);
@@ -78,6 +79,7 @@ public class VisitorsServiceImpl implements VisitorsService {
         VisitorsResponse response = new VisitorsResponse();
         response.setId(visitor.getId());
         response.setName(visitor.getName());
+        response.setPhoneNumber(visitor.getPhoneNumber());
         response.setSignOut(visitor.getSignOut());
         response.setSignIn(visitor.getSignIn());
         response.setPurpose(visitor.getPurpose());

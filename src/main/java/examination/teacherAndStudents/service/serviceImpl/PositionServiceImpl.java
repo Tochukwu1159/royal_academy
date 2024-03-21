@@ -18,6 +18,7 @@ import examination.teacherAndStudents.service.PositionService;
 import examination.teacherAndStudents.utils.Roles;
 import examination.teacherAndStudents.utils.StudentTerm;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,31 +36,32 @@ import java.util.stream.Stream;
 import static examination.teacherAndStudents.utils.StudentTerm.FIRST;
 
 @Service
+@RequiredArgsConstructor
 public class PositionServiceImpl implements PositionService {
-    @Autowired
-    private ScoreRepository scoreRepository;
 
-    @Autowired
-    private PositionRepository positionRepository;
+    private final ScoreRepository scoreRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ResultRepository resultRepository;
-    @Autowired
-    private EmailService emailService;
 
-    private static final String RESULT_FILE = "/Users/mac/Documents/ResultStatement.pdf";
-    @Autowired
-    private SubClassRepository subClassRepository;
-    @Autowired
-    private StudentClassLevelRepository studentClassLevelRepository;
+    private final PositionRepository positionRepository;
+
+
+    private final UserRepository userRepository;
+
+    private final ResultRepository resultRepository;
+
+    private final EmailService emailService;
+
+    private  static final String RESULT_FILE = "/Users/mac/Documents/ResultStatement.pdf";
+
+    private final SubClassRepository subClassRepository;
+
+    private final ClassCategoryRepository studentClassLevelRepository;
 
 
     @Transactional
     public void updateAllPositionsForAClass(SubClass studentClass, Year year,StudentTerm term) {
         // Get all users in the specified ClassLevel
-        StudentClassLevel classLevel = studentClassLevelRepository.findByStudentClass(studentClass)
+        ClassCategory classLevel = studentClassLevelRepository.findByStudentClass(studentClass)
                 .orElseThrow(() -> new ResourceNotFoundException("ClassLevel not found with ID: " + studentClass));
         SubClass subClass = subClassRepository.findById(studentClass.getId()).orElseThrow(()->new ResourceNotFoundException("Student class with not found with ID: " ));
         //please comfirm later
@@ -289,7 +291,7 @@ public class PositionServiceImpl implements PositionService {
         }
     }
 
-    private Image loadSignatureImage() throws IOException, BadElementException {
+    private  Image loadSignatureImage() throws IOException, BadElementException {
         // Load the signature image
         Image signatureImage = Image.getInstance("/Users/mac/Documents/principal.png"); // Replace with the actual path
         signatureImage.scaleToFit(100, 50); // Adjust the width and height as needed
@@ -297,7 +299,7 @@ public class PositionServiceImpl implements PositionService {
 
     }
 
-    private String getTeachersRemark(double averageScore) {
+    private  String getTeachersRemark(double averageScore) {
         // Add your logic for generating the teacher's remark based on the average score
         // You can customize this method according to your requirements
         if (averageScore >= 70) {
@@ -310,7 +312,7 @@ public class PositionServiceImpl implements PositionService {
     }
 
 
-    private void addTableHeader(PdfPTable table, Font font) {
+    private  void addTableHeader(PdfPTable table, Font font) {
         Stream.of("Subject", "Assessment Score", "Exam Score", "Total Mark", "Grade", "Rating")
                 .forEach(columnTitle -> {
                     PdfPCell header = new PdfPCell();
@@ -321,7 +323,7 @@ public class PositionServiceImpl implements PositionService {
                 });
     }
 
-    private void addRowToTable(PdfPTable table, String... values) {
+    private  void addRowToTable(PdfPTable table, String... values) {
         for (String value : values) {
             PdfPCell cell = new PdfPCell(new Phrase(value));
             cell.setBorderWidth(2);
@@ -332,7 +334,7 @@ public class PositionServiceImpl implements PositionService {
 
 
 
-    private Map<String, Object> createModelWithData(User user) {
+    private  Map<String, Object> createModelWithData(User user) {
         Map<String, Object> model = new HashMap<>();
 
         // Add data to the model

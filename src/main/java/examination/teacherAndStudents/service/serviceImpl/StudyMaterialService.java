@@ -2,15 +2,16 @@ package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.entity.StudyMaterial;
 import examination.teacherAndStudents.repository.StudyMaterialRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class StudyMaterialService {
-    @Autowired
-    private StudyMaterialRepository studyMaterialRepository;
+    private final StudyMaterialRepository studyMaterialRepository;
 
     public List<StudyMaterial> getAllMaterials() {
         return studyMaterialRepository.findAll();

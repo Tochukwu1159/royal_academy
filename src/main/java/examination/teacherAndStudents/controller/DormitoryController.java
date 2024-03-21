@@ -8,6 +8,7 @@ import examination.teacherAndStudents.error_handler.InsufficientBalanceException
 import examination.teacherAndStudents.error_handler.NotFoundException;
 import examination.teacherAndStudents.service.DormitoryService;
 import examination.teacherAndStudents.utils.AccountUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,13 +19,14 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/dormitorys")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/dormitories")
 public class DormitoryController {
 
-    @Autowired
-    private DormitoryService dormitoryService;
 
-    @GetMapping
+    private final DormitoryService dormitoryService;
+
+    @GetMapping("/all")
         public ResponseEntity<Page<Dormitory>> getAllDormitorys(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
                 @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
                 @RequestParam(defaultValue = "id") String sortBy) {
@@ -38,7 +40,7 @@ public class DormitoryController {
         return ResponseEntity.ok(dormitory.get());
     }
 
-    @PostMapping("/add")
+    @PostMapping("/create")
     public ResponseEntity<Dormitory> createDormitory(@RequestBody DormitoryRequest dormitory) {
         Dormitory createdDormitory = dormitoryService.createDormitory(dormitory);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDormitory);

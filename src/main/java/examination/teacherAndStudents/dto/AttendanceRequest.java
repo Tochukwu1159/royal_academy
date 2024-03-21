@@ -9,12 +9,16 @@ import java.time.Year;
 
 @Data
 public class AttendanceRequest {
-    private Long classLevelId;
+    private long classLevelId;
+    private long subClassId;
+
     private StudentTerm studentTerm;
 
-    private Long studentId;
-    private Year year;
+    private long studentId;
+    private long academicYearId;
 
     private LocalDate date;
     private AttendanceStatus status;
 }
+
+

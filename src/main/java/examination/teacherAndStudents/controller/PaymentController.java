@@ -2,16 +2,16 @@ package examination.teacherAndStudents.controller;
 
 import examination.teacherAndStudents.service.PaymentService;
 import examination.teacherAndStudents.utils.DuesStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/payment")
 public class PaymentController {
-
-    @Autowired
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
 
     @PostMapping("/pay")
     public ResponseEntity<String> payDue(@RequestParam Long dueId) {

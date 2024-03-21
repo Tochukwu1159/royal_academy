@@ -20,8 +20,8 @@ public class FormTeacher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "formTeacher")
-    private Set<SubClass> subClass;
+    @OneToOne(mappedBy = "formTeacher")
+    private SubClass subClass;
 
     private Year year;
     private Boolean active;

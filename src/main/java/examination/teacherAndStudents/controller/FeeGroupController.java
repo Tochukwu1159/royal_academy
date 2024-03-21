@@ -2,26 +2,22 @@ package examination.teacherAndStudents.controller;
 
 import examination.teacherAndStudents.dto.FeeGroupRequest;
 import examination.teacherAndStudents.dto.FeeGroupResponse;
-import examination.teacherAndStudents.dto.FeedbackResponse;
-import examination.teacherAndStudents.entity.Feedback;
 import examination.teacherAndStudents.service.FeeGroupService;
 import examination.teacherAndStudents.utils.AccountUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/feegroups")
+@RequestMapping("/api/v1/feegroups")
 @RequiredArgsConstructor
 public class FeeGroupController {
 
     private final FeeGroupService feeGroupService;
 
-    @GetMapping
+    @GetMapping("all")
 
         public ResponseEntity<Page<FeeGroupResponse>> getAllFeeGroups(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
                 @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
@@ -40,7 +36,7 @@ public class FeeGroupController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<FeeGroupResponse> createFeeGroup(@RequestBody FeeGroupRequest feeGroupRequest) {
         FeeGroupResponse createdFeeGroup = feeGroupService.createFeeGroup(feeGroupRequest);
         return new ResponseEntity<>(createdFeeGroup, HttpStatus.CREATED);

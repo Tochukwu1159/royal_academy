@@ -3,21 +3,25 @@ import examination.teacherAndStudents.dto.*;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.BadRequestException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
+import examination.teacherAndStudents.error_handler.ResourceNotFoundException;
 import examination.teacherAndStudents.service.UserService;
 import examination.teacherAndStudents.utils.AccountUtils;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value="/api/v1/users")
 public class UserController {
-    @Autowired
-    UserService userService;
+
+    private final UserService userService;
 
     @PostMapping("/create")
     public UserResponse createAccount(@RequestBody @Valid UserRequestDto userRequest) throws MessagingException {
@@ -28,10 +32,18 @@ public class UserController {
         return  userService.createAdmin(userRequest);
     }
 
-//    @PostMapping("/teacher/create")
-//    public UserResponse createTeacher(@RequestBody @Valid UserRequestDto userRequest) throws MessagingException {
-//        return  userService.createTeacher(userRequest);
-//    }
+    @GetMapping("/findAll")
+    public ResponseEntity<Page<UserResponse>> findAllStudentsFilteredAndPaginated(
+            @RequestParam Long classCategoryId,
+            @RequestParam Long subClassId,
+            @RequestParam Long  academicYearId,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy){
+        Page<UserResponse> allStudents = userService.getAllStudentsFilteredAndPaginated(classCategoryId,subClassId, academicYearId,pageNo, pageSize, sortBy);
+        return new ResponseEntity<>(allStudents, HttpStatus.OK);
+    }
+
 
 
     @PostMapping("/login")
@@ -73,15 +85,21 @@ public class UserController {
         return userService.updatePassword(changePasswordRequest);
     }
 
-//    @DeleteMapping("/delete/{userId}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-//        boolean deleted = userService.deleteUser(userId).hasBody();
-//        if (deleted) {
-//            return ResponseEntity.noContent().build();
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        boolean deleted = userService.deleteUser(userId).hasBody();
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    @DeleteMapping("/delete/{uniqueRegistrationNumber}")
+    public ResponseEntity<UserResponse> geenerateIdCard(@PathVariable String uniqueRegistrationNumber){
+        UserResponse userResponse = userService.geenerateIdCard(uniqueRegistrationNumber);
+        return new ResponseEntity<>(userResponse,HttpStatus.OK);
+
+    }
 
     @PutMapping("/{studentId}/updateClassLevel")
     public ResponseEntity<UserResponse> updateStudentClassLevel(
@@ -91,17 +109,9 @@ public class UserController {
             UserResponse response = userService.updateStudentClassLevel(studentId, newSubClassLevelId);
             return ResponseEntity.ok(response);
         } catch (CustomNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(UserResponse.builder()
-                            .responseCode(AccountUtils.ACCOUNT_NOT_FOUND)
-                            .responseMessage(e.getMessage())
-                            .build());
+            throw new ResourceNotFoundException("User not found "+e);
         } catch (BadRequestException e) {
-            return ResponseEntity.badRequest()
-                    .body(UserResponse.builder()
-                            .responseCode(AccountUtils.ACCOUNT_UPDATE_FAILED)
-                            .responseMessage(e.getMessage())
-                            .build());
+            throw new ResourceNotFoundException("Update failed "+e);
         }
     }
 //

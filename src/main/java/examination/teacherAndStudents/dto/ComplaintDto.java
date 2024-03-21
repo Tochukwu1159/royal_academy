@@ -1,14 +1,15 @@
 package examination.teacherAndStudents.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReplyFeedbackDto {
-    private String replyText;
+@Data
+public class ComplaintDto {
+    private String feedbackText;
+    private LocalDateTime submittedTime;
 }
