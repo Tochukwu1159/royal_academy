@@ -113,22 +113,20 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
 
 
     @Override
-    public DormitoryRoomResponse createDormitoryRoom(DormitoryRoomRequest dormitory) {
+    public DormitoryRoomResponse createDormitoryRoom(DormitoryRoomRequest dormitoryRoomRequest) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            Dormitory existingDormitory = dormitoryRepository.findById(dormitory.getDormitoryId())
-                    .orElseThrow(() -> new CustomNotFoundException(" staff not found with ID: " + dormitory.getDormitoryId()));
+            Dormitory existingDormitory = dormitoryRepository.findById(dormitoryRoomRequest.getDormitoryId())
+                    .orElseThrow(() -> new CustomNotFoundException(" staff not found with ID: " + dormitoryRoomRequest.getDormitoryId()));
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
 
                 if (user.getRoles() == Roles.ADMIN) {
                     DormitoryRooms dormitoryRooms = new DormitoryRooms();
+
+                    dormitoryRooms = dormitoryMapper(dormitoryRooms, dormitoryRoomRequest);
                     dormitoryRooms.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
-                    dormitoryRooms.setDescription(dormitoryRooms.getDescription());
-                    dormitoryRooms.setCostPerBed(dormitoryRooms.getCostPerBed());
-                    dormitoryRooms.setNumberOfBeds(dormitoryRooms.getNumberOfBeds());
-                    dormitoryRooms.setRoomOrHallName(dormitoryRooms.getRoomOrHallName());
                     dormitoryRooms.setDormitory(existingDormitory);
                      dormitoryRoomRepository.save(dormitoryRooms);
                     return dormitoryRoomsMapper.mapToDomitoryResponse(dormitoryRooms);
@@ -160,11 +158,7 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
 
                     if (optionalDormitory.isPresent()) {
                         DormitoryRooms dormitory = optionalDormitory.get();
-                        dormitory.setNumberOfBeds(updatedDormitory.getNumberOfBeds());
-                        dormitory.setDescription(updatedDormitory.getDescription());
-                        dormitory.setNumberOfBeds(updatedDormitory.getNumberOfBeds());
-                        dormitory.setRoomOrHallName(updatedDormitory.getRoomOrHallName());
-                        dormitory.setCostPerBed(updatedDormitory.getCostPerBed());
+                        dormitory = dormitoryMapper(dormitory, updatedDormitory);
                         dormitoryRoomRepository.save(dormitory);
                         return dormitoryRoomsMapper.mapToDomitoryResponse(dormitory);
                     } else {
@@ -180,6 +174,7 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
             throw new CustomInternalServerException("Error updating dormitory: " + e.getMessage());
         }
     }
+
 
     @Override
     public void deleteDormitoryRoom(Long dormitoryId) {
@@ -328,6 +323,14 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
         } catch (Exception e) {
             throw new CustomNotFoundException("An unexpected error occurred. Please try again later.");
         }
+    }
+
+    private DormitoryRooms dormitoryMapper(DormitoryRooms dormitory, DormitoryRoomRequest updatedDormitory) {
+        dormitory.setNumberOfBeds(updatedDormitory.getNumberOfBeds());
+        dormitory.setDescription(updatedDormitory.getDescription());
+        dormitory.setRoomOrHallName(updatedDormitory.getRoomOrHallName());
+        dormitory.setCostPerBed(updatedDormitory.getCostPerBed());
+        return dormitory;
     }
 
 }

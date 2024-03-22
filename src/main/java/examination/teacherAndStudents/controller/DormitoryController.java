@@ -1,6 +1,7 @@
 package examination.teacherAndStudents.controller;
 
 import examination.teacherAndStudents.dto.DormitoryRequest;
+import examination.teacherAndStudents.dto.DormitoryResponse;
 import examination.teacherAndStudents.dto.DormitoryRoomResponse;
 import examination.teacherAndStudents.entity.Dormitory;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
@@ -27,28 +28,28 @@ public class DormitoryController {
     private final DormitoryService dormitoryService;
 
     @GetMapping("/all")
-        public ResponseEntity<Page<Dormitory>> getAllDormitorys(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
-                @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
-                @RequestParam(defaultValue = "id") String sortBy) {
-        Page<Dormitory> dormitories = dormitoryService.getAllDormitorys(pageNo, pageSize, sortBy);
+        public ResponseEntity<Page<DormitoryResponse>> getAllDormitorys(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
+                                                                        @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
+                                                                        @RequestParam(defaultValue = "id") String sortBy) {
+        Page<DormitoryResponse> dormitories = dormitoryService.getAllDormitorys(pageNo, pageSize, sortBy);
         return ResponseEntity.ok(dormitories);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Dormitory> getDormitoryById(@PathVariable Long id) {
-        Optional<Dormitory> dormitory = dormitoryService.getDormitoryById(id);
+    public ResponseEntity<DormitoryResponse> getDormitoryById(@PathVariable Long id) {
+        Optional<DormitoryResponse> dormitory = dormitoryService.getDormitoryById(id);
         return ResponseEntity.ok(dormitory.get());
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Dormitory> createDormitory(@RequestBody DormitoryRequest dormitory) {
-        Dormitory createdDormitory = dormitoryService.createDormitory(dormitory);
+    public ResponseEntity<DormitoryResponse> createDormitory(@RequestBody DormitoryRequest dormitory) {
+        DormitoryResponse createdDormitory = dormitoryService.createDormitory(dormitory);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDormitory);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Dormitory> updateDormitory(@PathVariable Long id, @RequestBody DormitoryRequest updatedDormitory) {
-        Dormitory dormitory = dormitoryService.updateDormitory(id, updatedDormitory);
+    public ResponseEntity<DormitoryResponse> updateDormitory(@PathVariable Long id, @RequestBody DormitoryRequest updatedDormitory) {
+        DormitoryResponse dormitory = dormitoryService.updateDormitory(id, updatedDormitory);
         return ResponseEntity.ok(dormitory);
     }
 

@@ -92,6 +92,15 @@ public class User {
     @OneToMany(mappedBy = "user")
     private  List<Dues> duesList;
 
+    @OneToMany(mappedBy = "user")
+    private  List<Result> resultList;
+
+    @OneToMany(mappedBy = "user")
+    private  List<Score> scoreList;
+
+    @OneToMany(mappedBy = "staff")
+    private List<StaffPayroll> staffPayrolls;
+
 
     @OneToMany(mappedBy = "user")
     private  List<StaffAttendancePercent> staffAttendancePercents;

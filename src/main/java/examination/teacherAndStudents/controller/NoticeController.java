@@ -2,6 +2,7 @@ package examination.teacherAndStudents.controller;
 
 
 import examination.teacherAndStudents.dto.NoticeRequest;
+import examination.teacherAndStudents.dto.NoticeResponse;
 import examination.teacherAndStudents.dto.UpdateNoticeRequest;
 import examination.teacherAndStudents.entity.Notice;
 import examination.teacherAndStudents.service.NoticeService;
@@ -25,9 +26,9 @@ public class NoticeController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<Notice>> getAllNoticePosts() {
+    public ResponseEntity<List<NoticeResponse>> getAllNoticePosts() {
         try {
-            List<Notice> blogPosts = blogService.getAllNoticePosts();
+            List<NoticeResponse> blogPosts = blogService.getAllNoticePosts();
             return ResponseEntity.ok(blogPosts);
         } catch (Exception e) {
             // Handle unexpected exceptions
@@ -36,9 +37,9 @@ public class NoticeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Notice> getNoticePostById(@PathVariable Long id) {
+    public ResponseEntity<NoticeResponse> getNoticePostById(@PathVariable Long id) {
         try {
-            Notice blogPost = blogService.getNoticePostById(id);
+            NoticeResponse blogPost = blogService.getNoticePostById(id);
             if (blogPost != null) {
                 return ResponseEntity.ok(blogPost);
             } else {
@@ -51,19 +52,19 @@ public class NoticeController {
     }
 
     @GetMapping("/date-range")
-    public ResponseEntity<List<Notice>> getEventsByDateRange(
+    public ResponseEntity<List<NoticeResponse>> getEventsByDateRange(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate) {
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);
-        List<Notice> events = blogService.getEventsByDateRange(start, end);
+        List<NoticeResponse> events = blogService.getEventsByDateRange(start, end);
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Notice> createNoticePost(@RequestBody NoticeRequest blogPost) {
+    public ResponseEntity<NoticeResponse> createNoticePost(@RequestBody NoticeRequest blogPost) {
         try {
-            Notice createdNoticePost = blogService.createNoticePost(blogPost);
+            NoticeResponse createdNoticePost = blogService.createNoticePost(blogPost);
             return ResponseEntity.ok(createdNoticePost);
         } catch (Exception e) {
             // Handle unexpected exceptions

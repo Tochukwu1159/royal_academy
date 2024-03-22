@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface ScoreRepository extends JpaRepository<Score, Long> {
 
-
     List<Score> findScoreByUser(User student);
+
 
 
     Score findByUserAndSubClassIdAndSubjectNameAndYearAndTerm(User student, long subClassId, String name, Year year, StudentTerm term);

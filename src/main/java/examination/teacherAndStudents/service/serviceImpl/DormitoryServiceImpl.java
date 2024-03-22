@@ -1,27 +1,21 @@
 package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.Security.SecurityConfig;
+import examination.teacherAndStudents.dto.DormitoryResponse;
 import examination.teacherAndStudents.dto.DormitoryRequest;
-import examination.teacherAndStudents.dto.DormitoryRoomResponse;
 import examination.teacherAndStudents.entity.*;
 import examination.teacherAndStudents.error_handler.*;
 import examination.teacherAndStudents.repository.*;
 import examination.teacherAndStudents.service.DormitoryService;
-import examination.teacherAndStudents.utils.AvailabilityStatus;
-import examination.teacherAndStudents.utils.NotificationType;
 import examination.teacherAndStudents.utils.Roles;
-import examination.teacherAndStudents.utils.TransactionType;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,11 +25,11 @@ public class DormitoryServiceImpl implements DormitoryService {
     private final  DormitoryRepository dormitoryRepository;
 
     private final UserRepository userRepository;
-
+    private final ModelMapper modelMapper;
 
 
     @Override
-        public Page<Dormitory> getAllDormitorys(int pageNo, int pageSize, String sortBy){
+        public Page<DormitoryResponse> getAllDormitorys(int pageNo, int pageSize, String sortBy){
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -45,7 +39,7 @@ public class DormitoryServiceImpl implements DormitoryService {
                     Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).ascending());
                     // User is an admin, fetch all dormitorys
                     Page<Dormitory> dormitories = dormitoryRepository.findAll(paging);
-                    return dormitories;
+                    return dormitories.map((element) -> modelMapper.map(element, DormitoryResponse.class));
                 } else {
                     throw new CustomNotFoundException("Please log in as an Admin"); // Return unauthorized response for non-admin users
                 }
@@ -58,14 +52,14 @@ public class DormitoryServiceImpl implements DormitoryService {
     }
 
     @Override
-    public Optional<Dormitory> getDormitoryById(Long dormitoryId) {
+    public Optional<DormitoryResponse> getDormitoryById(Long dormitoryId) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             Optional<User> optionalUser = userRepository.findByEmail(email);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 if (user.getRoles() == Roles.ADMIN) {
-                    return dormitoryRepository.findById(dormitoryId);
+                    return dormitoryRepository.findById(dormitoryId).map((element) -> modelMapper.map(element, DormitoryResponse.class));
                 } else {
                     throw new CustomNotFoundException("Please log in as an Admin"); // Return unauthorized response for non-admin users
                 }
@@ -79,7 +73,7 @@ public class DormitoryServiceImpl implements DormitoryService {
 
 
     @Override
-    public Dormitory createDormitory(DormitoryRequest dormitory) {
+    public DormitoryResponse createDormitory(DormitoryRequest dormitory) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -92,7 +86,7 @@ public class DormitoryServiceImpl implements DormitoryService {
                     newDormitory.setType(dormitory.getType());
                     newDormitory.setIntake(dormitory.getIntake());
                     newDormitory.setDormitoryName(dormitory.getDormitoryName());
-                    return dormitoryRepository.save(newDormitory);
+                    return modelMapper.map(dormitoryRepository.save(newDormitory), DormitoryResponse.class);
                 } else {
                     throw new CustomNotFoundException("You do not have permission to create a dormitory. Please log in as an Admin.");
                 }
@@ -107,7 +101,7 @@ public class DormitoryServiceImpl implements DormitoryService {
 
 
     @Override
-    public Dormitory updateDormitory(Long dormitoryId, DormitoryRequest updatedDormitory) {
+    public DormitoryResponse updateDormitory(Long dormitoryId, DormitoryRequest updatedDormitory) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -125,7 +119,7 @@ public class DormitoryServiceImpl implements DormitoryService {
                         dormitory.setAddress(updatedDormitory.getAddress());
                         dormitory.setType(updatedDormitory.getType());
 
-                        return dormitoryRepository.save(dormitory);
+                        return modelMapper.map(dormitoryRepository.save(dormitory), DormitoryResponse.class);
                     } else {
                         throw new CustomNotFoundException("Dormitory not found for ID: " + dormitoryId);
                     }

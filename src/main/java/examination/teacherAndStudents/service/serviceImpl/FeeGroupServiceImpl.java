@@ -34,9 +34,7 @@ public class FeeGroupServiceImpl implements FeeGroupService {
     @Override
     public FeeGroupResponse createFeeGroup(FeeGroupRequest feeGroupRequest) {
         FeeGroup feeGroup = new FeeGroup();
-        feeGroup.setName(feeGroupRequest.getName());
-        feeGroup.setAmount(feeGroupRequest.getAmount());
-        feeGroup.setDescription(feeGroupRequest.getDescription());
+        mapToFeeGroup(feeGroupRequest);
         FeeGroup savedFeeGroup = feeGroupRepository.save(feeGroup);
         return mapToFeeGroupResponse(savedFeeGroup);
     }
@@ -45,9 +43,7 @@ public class FeeGroupServiceImpl implements FeeGroupService {
     public FeeGroupResponse updateFeeGroup(Long id, FeeGroupRequest feeGroupRequest) {
         FeeGroup existingFeeGroup = feeGroupRepository.findById(id).orElse(null);
         if (existingFeeGroup != null) {
-            existingFeeGroup.setName(feeGroupRequest.getName());
-            existingFeeGroup.setAmount(feeGroupRequest.getAmount());
-            existingFeeGroup.setDescription(feeGroupRequest.getDescription());
+            mapToFeeGroup(feeGroupRequest);
             FeeGroup updatedFeeGroup = feeGroupRepository.save(existingFeeGroup);
             return mapToFeeGroupResponse(updatedFeeGroup);
         }
@@ -65,6 +61,14 @@ public class FeeGroupServiceImpl implements FeeGroupService {
         response.setName(feeGroup.getName());
         response.setAmount(feeGroup.getAmount());
         response.setDescription(feeGroup.getDescription());
+        return response;
+    }
+
+    private FeeGroup mapToFeeGroup(FeeGroupRequest feeGroupRequest) {
+        FeeGroup response = new FeeGroup();
+        response.setName(feeGroupRequest.getName());
+        response.setAmount(feeGroupRequest.getAmount());
+        response.setDescription(feeGroupRequest.getDescription());
         return response;
     }
 }

@@ -36,6 +36,10 @@ public class Score {
     @Enumerated(EnumType.STRING)
     private StudentTerm term;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 
 
 

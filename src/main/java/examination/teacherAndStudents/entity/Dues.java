@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.Year;
 
 @Data
@@ -28,8 +29,7 @@ public class Dues {
     @Enumerated(EnumType.STRING)
     private DuesStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private StudentTerm term;
+    private LocalDateTime timeAdd;
     private Year year;
 
     @Lob

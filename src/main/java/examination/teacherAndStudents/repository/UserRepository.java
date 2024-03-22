@@ -16,7 +16,9 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Boolean existsByEmail(String email);
+//    public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+
+        Boolean existsByEmail(String email);
     Optional<User> findByUniqueRegistrationNumber(String uniqueRegistrationNumber);
     long countByRoles(Roles role);
 
@@ -28,6 +30,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByIdAndRoles(Long studentId, Roles roles);
 
     Boolean existsByUniqueRegistrationNumber(String studentReg);
+    Page<User> findAllByFirstNameContainingIgnoreCaseAndLastNameContainingIgnoreCaseOrId(String firstName, String lastName, Long id, Pageable pageable);
 
 
 

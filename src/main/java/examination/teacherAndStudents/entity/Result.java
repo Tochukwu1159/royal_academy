@@ -36,5 +36,9 @@ public class Result {
     @JsonBackReference
     private SubClass subClass;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 
 }

@@ -11,20 +11,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class ComplaintResponse {
-
     private Long id;
+
     private String feedbackText;
     private LocalDateTime submittedTime;
+    private String replyText;
+    private LocalDateTime replyTime;
+    private String reply;
+    private UserResponse user;
     // Other fields...
 
     // Constructors, getters, and setters...
-
-    public static ComplaintResponse fromComplaint(Complaint complaint) {
-        ComplaintResponse response = new ComplaintResponse();
-        response.setId(complaint.getId());
-        response.setFeedbackText(complaint.getFeedbackText());
-        response.setSubmittedTime(complaint.getSubmittedTime());
-        // Map other fields...
-        return response;
-    }
 }

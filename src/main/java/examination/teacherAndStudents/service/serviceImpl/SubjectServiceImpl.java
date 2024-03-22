@@ -15,9 +15,11 @@ import examination.teacherAndStudents.repository.UserRepository;
 import examination.teacherAndStudents.service.SubjectService;
 import examination.teacherAndStudents.utils.Roles;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class SubjectServiceImpl implements SubjectService {
     private final SubClassRepository subClassRepository;
 
     private final SubjectMapper subjectMapper;
+    private final ModelMapper modelMapper;
 
 
     public SubjectResponse createSubject(SubjectRequest subjectRequest) {
@@ -51,7 +54,7 @@ public class SubjectServiceImpl implements SubjectService {
         }
     }
 
-    public Subject updateSubject(Long subjectId, SubjectRequest updatedSubjectRequest) {
+    public SubjectResponse updateSubject(Long subjectId, SubjectRequest updatedSubjectRequest) {
         try {
             // Check if the subject exists
             Subject existingSubject = subjectRepository.findById(subjectId).orElse(null);
@@ -70,13 +73,13 @@ public class SubjectServiceImpl implements SubjectService {
             existingSubject.setName(updatedSubjectRequest.getName());
 
             // Save the updated subject
-            return subjectRepository.save(existingSubject);
+            return modelMapper.map(subjectRepository.save(existingSubject), SubjectResponse.class);
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while updating the subject " + e.getMessage());
         }
     }
 
-    public Subject findSubjectById(Long subjectId) {
+    public SubjectResponse findSubjectById(Long subjectId) {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
@@ -84,13 +87,13 @@ public class SubjectServiceImpl implements SubjectService {
                 throw new CustomNotFoundException("Please login as an Admin"); // Return unauthorized response for non-admin users
             }
 
-            return subjectRepository.findById(subjectId).orElse(null);
+            return modelMapper.map(subjectRepository.findById(subjectId).orElse(null), SubjectResponse.class);
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while finding the subject " +  e.getMessage());
         }
     }
 
-    public List<Subject> findAllSubjects() {
+    public List<SubjectResponse> findAllSubjects() {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             User admin = userRepository.findByEmailAndRoles(email, Roles.ADMIN);
@@ -98,7 +101,9 @@ public class SubjectServiceImpl implements SubjectService {
                 throw new CustomNotFoundException("Please login as an Admin"); // Return unauthorized response for non-admin users
             }
 
-            return subjectRepository.findAll();
+            return subjectRepository.findAll()
+                    .stream().map((element) -> modelMapper.map(element, SubjectResponse.class))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while fetching all subjects "+  e.getMessage());
         }

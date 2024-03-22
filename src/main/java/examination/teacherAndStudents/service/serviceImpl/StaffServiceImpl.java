@@ -80,23 +80,9 @@ public class StaffServiceImpl implements StaffService {
     }
 
     // Get all  staff
-    public Page<StaffResponse> findAllStaff(String searchTerm, int page, int size, String sortBy) {
+    public Page<StaffResponse> findAllStaff(String filter, int page, int size, String sortBy) {
         Pageable paging = PageRequest.of(page, size, Sort.by(sortBy).ascending());
-
-        // Search by teacherId, teacher's name, or teacher's role
-        Specification<User> spec = Specification.where(null);
-        if (searchTerm != null && !searchTerm.isEmpty()) {
-            spec = spec.or((root, query, cb) ->
-                            cb.equal(root.get("id"), Long.parseLong(searchTerm)))
-                    .or((root, query, cb) ->
-                            cb.like(cb.lower(root.get("firstName")), "%" + searchTerm.toLowerCase() + "%"))
-                    .or((root, query, cb) ->
-                            cb.like(cb.lower(root.get("lastName")), "%" + searchTerm.toLowerCase() + "%"))
-                    .or((root, query, cb) ->
-                            cb.like(cb.lower(root.get("roles")), "%" + searchTerm.toLowerCase() + "%"));
-        }
-
-        Page<User> staffPage = userRepository.findAll(spec, paging);
+        Page<User> staffPage = userRepository.findAllByFirstNameContainingIgnoreCaseAndLastNameContainingIgnoreCaseOrId(filter, filter, Long.valueOf(filter), paging);
         return staffPage.map(staffMapper::mapToStaffResponse);
     }
 

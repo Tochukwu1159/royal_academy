@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface SubjectService {
     SubjectResponse createSubject(SubjectRequest subject);
-    Subject updateSubject(Long subjectId, SubjectRequest updatedSubjectRequest);
-    Subject findSubjectById(Long subjectId);
-    List<Subject> findAllSubjects();
+    SubjectResponse updateSubject(Long subjectId, SubjectRequest updatedSubjectRequest);
+    SubjectResponse findSubjectById(Long subjectId);
+    List<SubjectResponse> findAllSubjects();
 
 
 }

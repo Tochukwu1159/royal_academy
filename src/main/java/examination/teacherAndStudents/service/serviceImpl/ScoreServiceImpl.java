@@ -70,6 +70,7 @@ public class ScoreServiceImpl implements ScoreService {
             // Create a new Score object
             Score score = new Score();
             score.setSubjectName(subject.getName());
+            score.setUser(student);
             score.setExamScore(scoreRequest.getExamScore());
             score.setSubject(subject);
             score.setAssessmentScore(scoreRequest.getAssessmentScore());

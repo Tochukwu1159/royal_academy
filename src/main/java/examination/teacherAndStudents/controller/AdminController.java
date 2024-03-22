@@ -56,7 +56,7 @@ public class AdminController {
                 @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
                 @RequestParam(defaultValue = "id") String sortBy) {
         try {
-            Page<User> teachersList = userService.getAllStudents(pageNo, pageSize, sortBy);
+            Page<User> teachersList = userService.getAllTeachers(pageNo, pageSize, sortBy);
             return ResponseEntity.ok(teachersList);
         } catch (CustomNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // You can customize the response as needed

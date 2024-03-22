@@ -29,22 +29,22 @@ public class SubjectController {
     }
 
     @PutMapping("/{subjectId}")
-    public ResponseEntity<Subject> updateSubject(
+    public ResponseEntity<SubjectResponse> updateSubject(
             @PathVariable Long subjectId,
             @RequestBody SubjectRequest updatedSubjectRequest
     ) {
-            Subject updatedSubject = subjectService.updateSubject(subjectId, updatedSubjectRequest);
+        SubjectResponse updatedSubject = subjectService.updateSubject(subjectId, updatedSubjectRequest);
             return ResponseEntity.ok(updatedSubject);
 
     }
 
     @GetMapping("/{subjectId}")
-    public Subject getSubjectById(@PathVariable Long subjectId) {
+    public SubjectResponse getSubjectById(@PathVariable Long subjectId) {
         return subjectService.findSubjectById(subjectId);
     }
 
     @GetMapping
-    public List<Subject> getAllSubjects() {
+    public List<SubjectResponse> getAllSubjects() {
         return subjectService.findAllSubjects();
     }
 

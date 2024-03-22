@@ -2,6 +2,7 @@ package examination.teacherAndStudents.controller;
 
 import examination.teacherAndStudents.dto.ComplaintDto;
 import examination.teacherAndStudents.dto.ComplaintResponse;
+import examination.teacherAndStudents.dto.ReplyComplaintDto;
 import examination.teacherAndStudents.entity.Complaint;
 import examination.teacherAndStudents.service.ComplaintService;
 import examination.teacherAndStudents.utils.AccountUtils;
@@ -22,14 +23,20 @@ public class ComplaintController {
     private final ComplaintService feedbackService;
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Complaint>> getUserComplaints(@PathVariable Long userId) {
-        List<Complaint> feedbacks = feedbackService.getUserComplaints(userId);
+    public ResponseEntity<List<ComplaintResponse>> getUserComplaints(@PathVariable Long userId) {
+        List<ComplaintResponse> feedbacks = feedbackService.getUserComplaints(userId);
         return ResponseEntity.ok(feedbacks);
     }
 
     @PostMapping
-    public ResponseEntity<Complaint> submitComplaint(@RequestBody ComplaintDto feedback) {
-        Complaint submittedComplaint = feedbackService.submitComplaint(feedback);
+    public ResponseEntity<ComplaintResponse> submitComplaint(@RequestBody ComplaintDto feedback) {
+        ComplaintResponse submittedComplaint = feedbackService.submitComplaint(feedback);
+        return ResponseEntity.ok(submittedComplaint);
+    }
+
+    @PutMapping("/reply/feedbackId")
+    public ResponseEntity<ComplaintResponse> replyToComplaint(@PathVariable  Long feedbackId, @RequestBody ReplyComplaintDto feedback) {
+        ComplaintResponse submittedComplaint = feedbackService.replyToComplaint(feedbackId, feedback);
         return ResponseEntity.ok(submittedComplaint);
     }
 
@@ -37,12 +44,8 @@ public class ComplaintController {
         public ResponseEntity<Page<ComplaintResponse>> getAllComplaint(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
                 @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
                 @RequestParam(defaultValue = "id") String sortBy) {
-        Page<Complaint> feedbackList = feedbackService.getAllComplaint(pageNo, pageSize, sortBy);
+        Page<ComplaintResponse> feedbackList = feedbackService.getAllComplaint(pageNo, pageSize, sortBy);
 
-        // Map Complaint objects to ComplaintResponse objects
-        Page<ComplaintResponse> feedbackResponses = feedbackList
-                .map(ComplaintResponse::fromComplaint);
-
-        return ResponseEntity.ok(feedbackResponses);
+        return ResponseEntity.ok(feedbackList);
     }
 }

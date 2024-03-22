@@ -1,6 +1,8 @@
 package examination.teacherAndStudents.controller;
 
 import examination.teacherAndStudents.dto.DuesRequest;
+import examination.teacherAndStudents.dto.DuesResponse;
+import examination.teacherAndStudents.dto.DuesUpdateRequest;
 import examination.teacherAndStudents.entity.Dormitory;
 import examination.teacherAndStudents.entity.Dues;
 import examination.teacherAndStudents.service.DuesService;
@@ -24,16 +26,16 @@ public class DuesController {
     }
 
     @GetMapping("/all")
-        public ResponseEntity<Page<Dues>> getAllDues(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
-                @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
-                @RequestParam(defaultValue = "id") String sortBy) {
-        Page<Dues> duesList = duesService.getAllDues(pageNo, pageSize, sortBy);
+        public ResponseEntity<Page<DuesResponse>> getAllDues(@RequestParam(defaultValue = AccountUtils.PAGENO) Integer pageNo,
+                                                             @RequestParam(defaultValue = AccountUtils.PAGESIZE) Integer pageSize,
+                                                             @RequestParam(defaultValue = "id") String sortBy) {
+        Page<DuesResponse> duesList = duesService.getAllDues(pageNo, pageSize, sortBy);
         return ResponseEntity.ok(duesList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Dues> getDuesById(@PathVariable Long id) {
-        Dues dues = duesService.getDuesById(id);
+    public ResponseEntity<DuesResponse> getDuesById(@PathVariable Long id) {
+        DuesResponse dues = duesService.getDuesById(id);
         if (dues != null) {
             return ResponseEntity.ok(dues);
         } else {
@@ -41,15 +43,32 @@ public class DuesController {
         }
     }
 
+    @PostMapping("/create/{id}")
+    public ResponseEntity<DuesResponse> createDuesForAStudent(@PathVariable Long id, @RequestBody DuesRequest duesRequest) {
+        DuesResponse createdDues = duesService.createDuesForASudent(id, duesRequest);
+        return ResponseEntity.ok(createdDues);
+    }
+
+
     @PostMapping("/create")
-    public ResponseEntity<Dues> createDues(@RequestBody DuesRequest duesRequest) {
-        Dues createdDues = duesService.createDues(duesRequest);
+    public ResponseEntity<List<DuesResponse>> createDues(@RequestBody DuesRequest duesRequest) {
+        List<DuesResponse> createdDues = duesService.createDues(duesRequest);
         return ResponseEntity.ok(createdDues);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Dues> updateDues(@PathVariable Long id, @RequestBody DuesRequest updatedDues) {
-        Dues updatedDuesResult = duesService.updateDues(id, updatedDues);
+    public ResponseEntity<DuesResponse> updateDues(@PathVariable Long id, @RequestBody DuesRequest updatedDues) {
+        DuesResponse updatedDuesResult = duesService.updateDuesForAStudent(id, updatedDues);
+        if (updatedDuesResult != null) {
+            return ResponseEntity.ok(updatedDuesResult);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/update_all/{dueId}")
+    public ResponseEntity<List<DuesResponse>> updateDuesForAllUsers(@PathVariable Long dueId, @RequestBody DuesUpdateRequest updatedDues) {
+        List<DuesResponse> updatedDuesResult = duesService.updateDuesForAllUsers(dueId, updatedDues);
         if (updatedDuesResult != null) {
             return ResponseEntity.ok(updatedDuesResult);
         } else {
