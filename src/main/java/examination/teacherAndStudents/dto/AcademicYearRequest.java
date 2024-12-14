@@ -12,6 +12,7 @@ import java.time.Year;
 @AllArgsConstructor
 public class AcademicYearRequest {
     private Year year;
+    private String academicSession;
 
     // Constructors, getters, and setters
 }

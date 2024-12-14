@@ -18,11 +18,7 @@ import java.time.Year;
 @Table(name = "score")
 @Entity
 @Builder
-public class Score {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Score extends BaseEntity{
 
 
     private int examScore;

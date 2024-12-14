@@ -15,16 +15,7 @@ public class UserDto {
 
     private String email;
     private String phoneNumber;
-    private String uniqueRegistrationNumber;
-    private String studentGuardianName;
-    private String age;
-    private String classAssigned;
-    private String studentGuardianPhoneNumber;
-    private String gender;
-    private Boolean isVerified;
-    private String subjectAssigned;
-    private String address;
-    private String academicQualification;
+
 
     // Constructors, getters, and setters
 }

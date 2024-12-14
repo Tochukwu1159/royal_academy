@@ -12,10 +12,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "transport")
-public class Transport {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Transport extends BaseEntity{
 
     @Column(name = "vehicle_number")
     private String vehicleNumber;
@@ -26,8 +23,8 @@ public class Transport {
 
     private String driverLicence;
 
-    @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<User> students;
+//    @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<User> students;
 
 
     @OneToOne

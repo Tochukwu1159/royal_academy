@@ -16,10 +16,7 @@ import java.util.List;
 @Table(name = "subject_schedule")
 @Entity
 @Builder
-public class SubjectSchedule {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class SubjectSchedule extends BaseEntity{
 
     private String teacher;
 
@@ -40,6 +37,7 @@ public class SubjectSchedule {
 
     @Enumerated(EnumType.STRING)
     private TeachingStatus teachingStatus;
+
 
 
 

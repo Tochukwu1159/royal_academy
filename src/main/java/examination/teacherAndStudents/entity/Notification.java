@@ -18,11 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @Table(name = "notification")
 
-public class Notification  {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Notification  extends BaseEntity{
     @Column(
             name = "message",
             nullable = false,

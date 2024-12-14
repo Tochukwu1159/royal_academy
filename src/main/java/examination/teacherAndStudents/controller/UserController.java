@@ -25,63 +25,64 @@ public class UserController {
 
     @PostMapping("/create")
     public UserResponse createAccount(@RequestBody @Valid UserRequestDto userRequest) throws MessagingException {
-        return  userService.createAccount(userRequest);
+        return userService.createAccount(userRequest);
     }
+
     @PostMapping("/admin/create")
     public UserResponse createAdmin(@RequestBody @Valid UserRequestDto userRequest) throws MessagingException {
-        return  userService.createAdmin(userRequest);
+        return userService.createAdmin(userRequest);
     }
 
     @GetMapping("/findAll")
     public ResponseEntity<Page<UserResponse>> findAllStudentsFilteredAndPaginated(
             @RequestParam Long classCategoryId,
             @RequestParam Long subClassId,
-            @RequestParam Long  academicYearId,
+            @RequestParam Long academicYearId,
             @RequestParam(defaultValue = "0") int pageNo,
             @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "id") String sortBy){
-        Page<UserResponse> allStudents = userService.getAllStudentsFilteredAndPaginated(classCategoryId,subClassId, academicYearId,pageNo, pageSize, sortBy);
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Page<UserResponse> allStudents = userService.getAllStudentsFilteredAndPaginated(classCategoryId, subClassId, academicYearId, pageNo, pageSize, sortBy);
         return new ResponseEntity<>(allStudents, HttpStatus.OK);
     }
 
 
-
     @PostMapping("/login")
-    public LoginResponse loginUser(@RequestBody @Valid LoginRequest loginRequest){
+    public LoginResponse loginUser(@RequestBody @Valid LoginRequest loginRequest) {
         return userService.loginUser(loginRequest);
 
     }
 
 
     @PostMapping("/admin/login")
-    public LoginResponse loginAmin(@RequestBody @Valid LoginRequest loginRequest){
+    public LoginResponse loginAmin(@RequestBody @Valid LoginRequest loginRequest) {
         return userService.loginAdmin(loginRequest);
 
     }
 
     @PostMapping("/edit")
-    public UserResponse editUserDetails( @RequestBody @Valid EditUserRequest editUserDto){
+    public UserResponse editUserDetails(@RequestBody @Valid EditUserRequest editUserDto) {
         return userService.editUserDetails(editUserDto);
     }
+
     @PostMapping("/forgot-password")
-    public  UserResponse forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest){
+    public UserResponse forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest) {
         return userService.forgotPassword(forgotPasswordRequest);
     }
 
     @GetMapping("/resetPassword")
-    public  UserResponse resetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest, @RequestParam("token") String token){
+    public UserResponse resetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest, @RequestParam("token") String token) {
         return userService.resetPassword(passwordResetRequest, token);
     }
 
     @PostMapping("/deactivate/{uniqueRegistrationNumber}")
-    public  User deactivateStudent( @PathVariable String uniqueRegistrationNumber){
+    public User deactivateStudent(@PathVariable String uniqueRegistrationNumber) {
         return userService.deactivateStudent(uniqueRegistrationNumber);
 
     }
 
 
     @PostMapping("/update")
-    public UserResponse updatePassword (@RequestBody @Valid ChangePasswordRequest changePasswordRequest){
+    public UserResponse updatePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
         return userService.updatePassword(changePasswordRequest);
     }
 
@@ -94,10 +95,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
     @DeleteMapping("/delete/{uniqueRegistrationNumber}")
-    public ResponseEntity<UserResponse> geenerateIdCard(@PathVariable String uniqueRegistrationNumber){
+    public ResponseEntity<UserResponse> geenerateIdCard(@PathVariable String uniqueRegistrationNumber) {
         UserResponse userResponse = userService.geenerateIdCard(uniqueRegistrationNumber);
-        return new ResponseEntity<>(userResponse,HttpStatus.OK);
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
 
     }
 
@@ -106,13 +108,14 @@ public class UserController {
             @PathVariable Long studentId,
             @RequestParam Long newSubClassLevelId) {
         try {
-            UserResponse response = userService.updateStudentClassLevel(studentId, newSubClassLevelId);
-            return ResponseEntity.ok(response);
+//            UserResponse response = userService.updateStudentClassLevel(studentId, newSubClassLevelId);
+//            return ResponseEntity.ok(response);
         } catch (CustomNotFoundException e) {
-            throw new ResourceNotFoundException("User not found "+e);
+            throw new ResourceNotFoundException("User not found " + e);
         } catch (BadRequestException e) {
-            throw new ResourceNotFoundException("Update failed "+e);
+            throw new ResourceNotFoundException("Update failed " + e);
         }
+        return null;
     }
 //
 //

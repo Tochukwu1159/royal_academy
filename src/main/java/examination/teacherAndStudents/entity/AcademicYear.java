@@ -17,15 +17,12 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "academic_year")
-public class AcademicYear {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class AcademicYear extends BaseEntity{
+    @Column(name = "academic_session")
+    private String academicSession;
     @Column(name = "year")
     private Year year;
 
-    @OneToMany(mappedBy = "academicYear", cascade = CascadeType.ALL)
-    private List<ClassCategory> classCategories;
+//    @OneToMany(mappedBy = "academicYear", cascade = CascadeType.ALL)
+//    private List<ClassCategory> classCategories;
 }

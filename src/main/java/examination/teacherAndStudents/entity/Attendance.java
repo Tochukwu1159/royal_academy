@@ -17,11 +17,7 @@ import java.time.Year;
 @Table(name = "attendance")
 @Entity
 @Builder
-public class Attendance {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Attendance extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

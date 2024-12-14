@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.domain.geo.GeoLocation;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,6 +36,7 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
     private final TimetableRepository timetableRepository;
     private final AttendancePercentRepository attendancePercentRepository;
     private final StaffAttendancePercentRepository staffAttendancePercentRepository;
+    private final ProfileRepository profileRepository;
 
 
     public void checkIn(String location) {
@@ -44,6 +46,11 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
 
             if (staff == null) {
                 throw new CustomNotFoundException("Please log in as a teacher."); // Improved error message
+            }
+            Optional<Profile> staffProfile = profileRepository.findByUser(staff);
+
+            if (staffProfile == null) {
+                throw new CustomNotFoundException("Staff not found"); // Improved error message
             }
 
             LocalDateTime checkInTime = LocalDateTime.now();
@@ -62,11 +69,12 @@ public class StaffAttendanceServiceImpl implements StaffAttendanceService {
             }
 
             StaffAttendance attendance = new StaffAttendance();
-            attendance.setStaffUniqueRegNumber(staff.getUniqueRegistrationNumber());
+            attendance.setStaffUniqueRegNumber(staffProfile.get().getUniqueRegistrationNumber());
             attendance.setCheckInTime(checkInTime);
             attendance.setCheckInLocation(location);
             attendance.setUser(staff);
             attendance.setStatus(AttendanceStatus.PRESENT);
+//            GeoLocation geoLocation =
             staffAttendanceRepository.save(attendance);
         } catch (Exception e) {
             // Handle exceptions appropriately (log, rethrow, etc.)

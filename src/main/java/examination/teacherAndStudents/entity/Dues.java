@@ -19,10 +19,7 @@ import java.time.Year;
 @Table(name = "dues")
 @Entity
 @Builder
-public class Dues {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Dues extends BaseEntity{
     private String purpose;
     private BigDecimal amount;
 

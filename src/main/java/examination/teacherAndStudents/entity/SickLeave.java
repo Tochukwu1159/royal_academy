@@ -20,11 +20,8 @@ import java.time.Year;
 @Table(name = "sick_leave")
 @Entity
 @Builder
-public class SickLeave {
+public class SickLeave extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)

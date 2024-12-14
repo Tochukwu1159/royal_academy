@@ -15,11 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "book_borrowing")
 @Entity
 @Builder
-public class BookBorrowing {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class BookBorrowing extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;

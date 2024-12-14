@@ -15,10 +15,8 @@ import java.time.Year;
     @Table(name = "staff_attendance_percent")
     @Entity
     @Builder
-    public class StaffAttendancePercent {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    public class StaffAttendancePercent extends BaseEntity{
+
 
         private Double attendancePercentage;
 

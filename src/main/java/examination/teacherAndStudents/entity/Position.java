@@ -18,10 +18,7 @@ import java.util.Objects;
 @Table(name = "position")
 @Entity
 @Builder
-    public class Position {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    public class Position extends BaseEntity{
         private double averageScore;
 
     @ManyToOne
@@ -39,10 +36,4 @@ import java.util.Objects;
     @Enumerated(EnumType.STRING)
     private StudentTerm term;
 
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
     }

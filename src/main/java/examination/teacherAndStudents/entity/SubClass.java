@@ -13,10 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 //@Table(name = "c")
-public class SubClass {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class SubClass extends BaseEntity{
+
 
     @Column(nullable = false)
     private String subClassName;
@@ -29,18 +27,18 @@ public class SubClass {
 
     private String classUniqueUrl;
 
-    @OneToMany(mappedBy = "subClass")
-    private List<Subject> subject;
+//    @OneToMany(mappedBy = "subClass")
+//    private List<Subject> subject;
 
     @OneToOne
     @JoinColumn(name = "form_teacher_id")
     private FormTeacher formTeacher;
 
-    @OneToMany(mappedBy = "subClass")
-    private  List<AttendancePercent> attendancePercents;
+//    @OneToMany(mappedBy = "subClass")
+//    private  List<AttendancePercent> attendancePercents;
 
-    @OneToMany(mappedBy = "studentClass", cascade = CascadeType.ALL)
-    private List<User> students;
+//    @OneToMany(mappedBy = "studentClass", cascade = CascadeType.ALL)
+//    private List<User> students;
 
     @JsonBackReference
     @ManyToOne
@@ -49,16 +47,16 @@ public class SubClass {
 
 
 
-    @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL)
-    private List<Attendance> attendanceList;
+//    @OneToMany(mappedBy = "subClass", cascade = CascadeType.ALL)
+//    private List<Attendance> attendanceList;
 
 
 
-    @OneToMany(mappedBy = "subClass")
-    private  List<Result> results;
+//    @OneToMany(mappedBy = "subClass")
+//    private  List<Result> results;
 
-    @OneToMany(mappedBy = "subClass")
-    private  List<Position> positions;
+//    @OneToMany(mappedBy = "subClass")
+//    private  List<Position> positions;
 
 }
 

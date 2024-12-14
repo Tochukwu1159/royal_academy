@@ -18,10 +18,7 @@ import java.util.List;
 @Table(name = "result")
 @Entity
 @Builder
-public class Result {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Result extends BaseEntity{
 
     private Double totalMarks;
     private String subjectName;

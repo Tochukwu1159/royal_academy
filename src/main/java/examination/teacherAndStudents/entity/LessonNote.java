@@ -15,10 +15,7 @@ import java.time.Year;
 @Table(name = "lessonNote")
 @Entity
 @Builder
-public class LessonNote {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class LessonNote extends BaseEntity{
 
     private String title;
     private String content;

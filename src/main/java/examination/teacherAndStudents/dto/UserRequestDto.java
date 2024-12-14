@@ -1,6 +1,7 @@
 package examination.teacherAndStudents.dto;
 
 import examination.teacherAndStudents.entity.SubClass;
+import examination.teacherAndStudents.utils.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -61,5 +62,5 @@ public class UserRequestDto {
 
     @NotNull(message = "Gender is required")
     @NotEmpty(message = "Gender  cannot be empty")
-    private String gender;
+    private Gender gender;
 }

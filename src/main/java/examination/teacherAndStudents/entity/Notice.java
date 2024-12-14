@@ -17,10 +17,7 @@ import java.util.Date;
 @Table(name = "notice")
 @Entity
 @Builder
-public class Notice {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Notice extends BaseEntity{
 
     @Column(nullable = false)
     private String title;

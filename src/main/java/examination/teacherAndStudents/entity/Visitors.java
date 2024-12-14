@@ -14,10 +14,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "visitors")
-public class Visitors {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Visitors extends BaseEntity{
 
     @Column(name = "name")
     private String name;

@@ -15,10 +15,7 @@ import java.util.List;
 @Table(name = "staff_Payroll")
 @Entity
 @Builder
-public class StaffPayroll {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class StaffPayroll extends BaseEntity{
     private String name;
     private  String uniqueRegistrationNumber;
     private double baseSalary;

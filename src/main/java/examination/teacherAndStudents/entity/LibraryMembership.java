@@ -17,17 +17,14 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "library_Membership ")
-public class LibraryMembership {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class LibraryMembership extends BaseEntity{
     private String userRole;
     private String userClass;
     private String userName;
 
     private String memberId;
-    @OneToMany(mappedBy = "student")
-    private List<BookBorrowing> borrowing;
+//    @OneToMany(mappedBy = "student")
+//    private List<BookBorrowing> borrowing;
 
 
 }

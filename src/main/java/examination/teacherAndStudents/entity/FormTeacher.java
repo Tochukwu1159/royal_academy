@@ -15,10 +15,7 @@ import java.util.Set;
 @Table(name = "formTeacher")
 @Entity
 @Builder
-public class FormTeacher {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class FormTeacher extends BaseEntity {
 
     @OneToOne(mappedBy = "formTeacher")
     private SubClass subClass;

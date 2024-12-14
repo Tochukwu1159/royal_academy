@@ -17,10 +17,7 @@ import java.util.List;
 @Table(name = "dormitory_Rooms")
 @Entity
 @Builder
-public class DormitoryRooms {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class DormitoryRooms extends BaseEntity{
     private String RoomOrHallName;
 
     private int numberOfBeds;
@@ -35,6 +32,6 @@ public class DormitoryRooms {
 
         @Enumerated(EnumType.STRING)
     private AvailabilityStatus availabilityStatus;
-    @OneToMany(mappedBy = "dormitory")
-    private List<User> user;
+//    @OneToMany(mappedBy = "dormitory")
+//    private List<User> user;
 }

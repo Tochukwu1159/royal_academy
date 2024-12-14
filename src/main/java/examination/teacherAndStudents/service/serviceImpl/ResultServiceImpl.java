@@ -6,7 +6,7 @@ import examination.teacherAndStudents.error_handler.EntityNotFoundException;
 import examination.teacherAndStudents.error_handler.NotFoundException;
 import examination.teacherAndStudents.repository.*;
 import examination.teacherAndStudents.service.ResultService;
-import examination.teacherAndStudents.service.ScoreService;
+//import examination.teacherAndStudents.service.ScoreService;
 import examination.teacherAndStudents.utils.StudentTerm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Service
 public class ResultServiceImpl implements ResultService {
 
-    private final ScoreService scoreService;
+//    private final ScoreService scoreService;
     private final UserRepository userRepository;
     private final ScoreRepository scoreRepository;
     private final ResultRepository resultRepository;
@@ -28,11 +28,11 @@ public class ResultServiceImpl implements ResultService {
     private final SubClassRepository subClassRepository;
 
     @Autowired
-    public ResultServiceImpl(ScoreService scoreService, UserRepository userRepository, ScoreRepository scoreRepository,
+    public ResultServiceImpl( UserRepository userRepository, ScoreRepository scoreRepository,
                              ResultRepository resultRepository,
                              PositionRepository positionRepository,
                              SubClassRepository subClassRepository) {
-        this.scoreService = scoreService;
+//        this.scoreService = scoreService;
         this.userRepository = userRepository;
         this.scoreRepository = scoreRepository;
         this.resultRepository = resultRepository;
@@ -50,11 +50,11 @@ public class ResultServiceImpl implements ResultService {
             SubClass studentClass = subClassRepository.findById(subClassLevelId)
                     .orElseThrow(() -> new NotFoundException("Student class not found"));
 
-            List<User> students = studentClass.getStudents();
+//            List<User> students = studentClass.getStudents();
 
-            Optional<User> desiredStudent = students.stream()
-                    .filter(s -> s.getId().equals(student.getId()))
-                    .findFirst();
+//            Optional<User> desiredStudent = students.stream()
+//                    .filter(s -> s.getId().equals(student.getId()))
+//                    .findFirst();
 
             // Retrieve the score for the student and subject
             Score score = scoreRepository.findByUserAndSubClassIdAndSubjectNameAndYearAndTerm(student, subClassLevelId, subjectName, year, term);

@@ -18,10 +18,7 @@ import java.util.List;
 @Table(name = "timetable")
 @Entity
 @Builder
-public class Timetable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Timetable extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "class_id")
@@ -36,9 +33,4 @@ public class Timetable {
 
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
-
-    @OneToMany(mappedBy = "timetable", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubjectSchedule> subjectSchedules = new ArrayList<>();
-
-    // Getters and setters
 }

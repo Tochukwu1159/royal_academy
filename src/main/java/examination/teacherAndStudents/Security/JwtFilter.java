@@ -48,7 +48,14 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
+//        validateSubscriptionKey(httpServletRequest )
         filterChain.doFilter(httpServletRequest, httpServletResponse);
 
     }
+
+//    void validateSubscriptionKey(HttpServletRequest httpServletRequest){
+//       String subKey = httpServletRequest.getHeader("sub-key");
+//       if()
+//
+//    }
     }

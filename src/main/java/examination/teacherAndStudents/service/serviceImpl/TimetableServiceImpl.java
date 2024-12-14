@@ -37,8 +37,10 @@ public class TimetableServiceImpl implements TimetableService {
     private final AcademicYearRepository academicYearRepository;
 
     @Transactional
-        @Override
-    public Timetable createTimetable(Long schoolClassId, Long teacherId, DayOfWeek dayOfWeek, List<SubjectScheduleRequest> subjectSchedules, TimetableType timetableType, StudentTerm term, Long yearId) {
+    @Override
+    public Timetable createTimetable(Long schoolClassId, Long teacherId, DayOfWeek dayOfWeek,
+                                     List<SubjectScheduleRequest> subjectSchedules, TimetableType timetableType,
+                                     StudentTerm term, Long yearId) {
         try {
             // Ensure the user has admin role
             String email = SecurityConfig.getAuthenticatedUserEmail();
@@ -46,69 +48,65 @@ public class TimetableServiceImpl implements TimetableService {
             if (admin == null) {
                 throw new CustomNotFoundException("Please login as an Admin");
             }
+
+            // Find the teacher by ID
             User teacher = userRepository.findByIdAndRoles(teacherId, Roles.TEACHER);
             if (teacher == null) {
                 throw new CustomNotFoundException("Teacher not found");
             }
 
-            // Perform any validation or processing if needed
-            Optional<SubClass> classLevel = subClassRepository.findById(schoolClassId);
-            if (!classLevel.isPresent()) {
-                throw new CustomNotFoundException("Class with ID: " + schoolClassId + " not found");
-            }
+            // Find the class level by ID
+            Optional<SubClass> classLevelOptional = subClassRepository.findById(schoolClassId);
+            SubClass classLevel = classLevelOptional.orElseThrow(() ->
+                    new CustomNotFoundException("Class with ID: " + schoolClassId + " not found"));
 
-            Optional<AcademicYear> academicYear = academicYearRepository.findById(yearId);
-            if (!academicYear.isPresent()) {
-                throw new CustomNotFoundException("Academic year with ID: " + yearId + " not found");
-            }
+            // Find the academic year by ID
+            Optional<AcademicYear> academicYearOptional = academicYearRepository.findById(yearId);
+            AcademicYear academicYear = academicYearOptional.orElseThrow(() ->
+                    new CustomNotFoundException("Academic year with ID: " + yearId + " not found"));
 
             // Create a Timetable entity
             Timetable timetable = new Timetable();
-            timetable.setSubClass(classLevel.get());
+            timetable.setSubClass(classLevel);
             timetable.setDayOfWeek(dayOfWeek);
             timetable.setTerm(term);
-            timetable.setYear(academicYear.get().getYear());
-            timetable.setTimetableType(timetableType); // Set the timetable type
+            timetable.setYear(academicYear.getYear());
+            timetable.setTimetableType(timetableType);
+            timetable = timetableRepository.save(timetable);
 
             // Create SubjectSchedule entities and associate them with the timetable
-            List<SubjectSchedule> schedules = new ArrayList<>();
             for (SubjectScheduleRequest scheduleRequest : subjectSchedules) {
                 SubjectSchedule schedule = new SubjectSchedule();
 
                 // Retrieve the Subject by ID
-                Optional<Subject> subjectForSchedule = subjectRepository.findById(scheduleRequest.getSubjectId());
-                if (subjectForSchedule.isEmpty()) {
-                    throw new CustomNotFoundException("Subject not found with ID: " + scheduleRequest.getSubjectId());
-                }
+                Optional<Subject> subjectOptional = subjectRepository.findById(scheduleRequest.getSubjectId());
+                Subject subject = subjectOptional.orElseThrow(() ->
+                        new CustomNotFoundException("Subject not found with ID: " + scheduleRequest.getSubjectId()));
 
-                // Set the Subject for the SubjectSchedule
-                schedule.setSubject(subjectForSchedule.get());
+                // Set SubjectSchedule properties
+                schedule.setSubject(subject);
                 schedule.setStartTime(scheduleRequest.getStartTime());
-                schedule.setTeachingStatus(TeachingStatus.NOT_TAUGHT);
                 schedule.setEndTime(scheduleRequest.getEndTime());
+                schedule.setTopic(scheduleRequest.getTopic());
+                schedule.setTeachingStatus(TeachingStatus.NOT_TAUGHT);
                 schedule.setTimetable(timetable);
-                schedule.setTeacher(teacher.getFirstName() + teacher.getLastName());
-                schedules.add(schedule);
+                schedule.setTeacher(teacher.getFirstName() + " " + teacher.getLastName()); // Set teacher's full name
+                subjectScheduleRepository.save(schedule);
             }
 
-            timetable.setSubjectSchedules(schedules);
+
             // Save the timetable and associated subject schedules
             timetable = timetableRepository.save(timetable);
 
             return timetable;
         } catch (CustomNotFoundException e) {
-            // Log the exception
             log.error("Error creating timetable: " + e.getMessage(), e);
-            // Rethrow the custom exception
             throw new CustomNotFoundException("Error creating timetable: " + e.getMessage());
         } catch (Exception e) {
-            // Log the exception
-            log.error("Unexpected error creating timetable " + e.getMessage());
-            // Wrap and throw a more general exception
-            throw new CustomInternalServerException("Unexpected error creating timetable " + e.getMessage());
+            log.error("Unexpected error creating timetable: " + e.getMessage(), e);
+            throw new CustomInternalServerException("Unexpected error creating timetable: " + e.getMessage());
         }
     }
-
 
 
    @Override

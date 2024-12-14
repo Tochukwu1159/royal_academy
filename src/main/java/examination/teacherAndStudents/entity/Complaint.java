@@ -14,10 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "complaint")
 
 @Builder
-public class Complaint {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Complaint extends BaseEntity{
     private String feedbackText;
     private LocalDateTime submittedTime;
     private String replyText;

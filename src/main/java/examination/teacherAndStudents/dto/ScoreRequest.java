@@ -1,6 +1,7 @@
 package examination.teacherAndStudents.dto;
 
 import examination.teacherAndStudents.entity.AcademicYear;
+import examination.teacherAndStudents.utils.AttendanceStatus;
 import examination.teacherAndStudents.utils.StudentTerm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,14 +15,13 @@ import java.time.Year;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScoreRequest {
-    private long subClassId;
-    private long classLevelId;
-    private  long studentId;
-    private long subjectId;
+    private long studentUniqueId;
+    private int assessemtScore;
     private int examScore;
-    private int assessmentScore;
-    private long academicYearId;;
-    private StudentTerm term;
+    private long classLevelId;
+    private long subjectId;
+
+
 
 
 }

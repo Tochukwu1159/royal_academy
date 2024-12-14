@@ -1,5 +1,6 @@
 package examination.teacherAndStudents.dto;
 
+import examination.teacherAndStudents.utils.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 
 @Data
@@ -40,7 +42,7 @@ public class EditUserRequest {
     @NotEmpty(message = "Phone Number cannot be empty")
     private String phoneNumber;
     private String registrationNumber;
-    private String dateOfBirth;
+    private Date dateOfBirth;
     private String formTeacher;
     private String classAssigned;
     private String address;
@@ -54,5 +56,5 @@ public class EditUserRequest {
 
     @NotNull(message = "Gender is required")
     @NotEmpty(message = "Gender  cannot be empty")
-    private String gender;
+    private Gender gender;
 }

@@ -1,15 +1,14 @@
 package examination.teacherAndStudents.service.serviceImpl;
 
-import examination.teacherAndStudents.dto.AttendanceRequest;
-import examination.teacherAndStudents.dto.AttendanceResponse;
-import examination.teacherAndStudents.dto.StudentAttendanceDTO;
-import examination.teacherAndStudents.dto.UserDto;
+import examination.teacherAndStudents.dto.*;
 import examination.teacherAndStudents.entity.*;
 import examination.teacherAndStudents.error_handler.AttendanceAlreadyTakenException;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
+import examination.teacherAndStudents.error_handler.SubscriptionExpiredException;
 import examination.teacherAndStudents.repository.*;
 import examination.teacherAndStudents.service.AttendanceService;
+import examination.teacherAndStudents.service.SchoolService;
 import examination.teacherAndStudents.utils.AttendanceStatus;
 import examination.teacherAndStudents.utils.StudentTerm;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final UserRepository userRepository;
 
+    private final SchoolService schoolService;
+
 
     private final AttendanceRepository attendanceRepository;
 
@@ -45,39 +46,60 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final ClassCategoryRepository studentClassLevelRepository;
 
     private final ModelMapper modelMapper;
+    private final ProfileRepository profileRepository;
+
+
+    @Override
+    public List<StudentListResponse>  loadStudentListPerSubClass(StudentListRequest studentListRequest) {
+        try {
+            AcademicYear studentAcademicYear = academicYearRepository.findById(studentListRequest.getAcademicYearId())
+                    .orElseThrow(() -> new CustomNotFoundException("Student academic year not found"));
+
+            ClassCategory studentClassLevel = studentClassLevelRepository.findByIdAndAcademicYear(studentListRequest.getClassLevelId(), studentAcademicYear);
+
+            SubClass studentClass = subClassRepository.findByIdAndClassCategory(studentListRequest.getSubClassId(),studentClassLevel);
+
+            List<Profile> studentProfiles = profileRepository.findAllByStudentClass(studentClass);
+
+            Long subClassId = studentClass.getId();
+
+            return studentProfiles.stream()
+                    .map(profile -> {
+                        StudentListResponse response = modelMapper.map(profile, StudentListResponse.class);
+                        response.setStudentClassId(subClassId);
+                        return response;
+                    })
+                    .collect(Collectors.toList());
+
+        } catch (CustomNotFoundException e) {
+            // Handle not found exception
+            throw new CustomNotFoundException("Error: " + e.getMessage());
+        } catch (Exception e) {
+            // Handle other exceptions
+            throw new CustomInternalServerException("Error taking attendance: " + e.getMessage());
+        }
+    }
+
+
 
 @Override
     public void takeAttendance(AttendanceRequest attendanceRequest) {
+
         try {
-                        AcademicYear studentAcademicYear = academicYearRepository.findById(attendanceRequest.getAcademicYearId())
+                        User student = userRepository.findById(attendanceRequest.getStudentUniqueId())
+                    .orElseThrow(() -> new CustomNotFoundException("Student  not found"));
+
+            SubClass studentClass = subClassRepository.findById(attendanceRequest.getStudentClassId())
                     .orElseThrow(() -> new CustomNotFoundException("Student academic year not found"));
 
-            ClassCategory studentClassLevel = studentClassLevelRepository.findByIdAndAcademicYear(attendanceRequest.getClassLevelId(), studentAcademicYear);
-
-            SubClass studentClass = subClassRepository.findByIdAndClassCategory(attendanceRequest.getSubClassId(),studentClassLevel);
-
-            // Retrieve students based on class and subclass
-            List<User> students = studentClass.getStudents();
-
-
-            // Prepare a list to hold the attendance records
-            List<Attendance> attendanceList = new ArrayList<>();
-
-            // Iterate through the list of students to handle attendance
-            for (User student : students) {
-                Attendance attendance = new Attendance();
+                    Attendance attendance = new Attendance();
                 attendance.setUser(student);
                 attendance.setSubClass(studentClass);
-                attendance.setDate(attendanceRequest.getDate());
-                // Set the attendance status based on the request
+                attendance.setDate(LocalDate.now());
                 attendance.setStatus(attendanceRequest.getStatus());
 
-                // Add the attendance record to the list
-                attendanceList.add(attendance);
-            }
-
             // Save the attendance records in bulk
-            attendanceRepository.saveAll(attendanceList);
+            attendanceRepository.save(attendance);
 
         } catch (CustomNotFoundException e) {
             // Handle not found exception
@@ -211,6 +233,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         } catch (Exception e) {
             throw new CustomInternalServerException("An error occurred while calculating attendance percentage: " + e.getMessage());
         }
+    }
+
+    private boolean isSubscriptionExpired(School school) {
+        LocalDate expiryDate = school.getSubscriptionExpiryDate();
+        return expiryDate != null && expiryDate.isBefore(LocalDate.now());
     }
 
 

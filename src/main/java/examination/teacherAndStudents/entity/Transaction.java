@@ -16,11 +16,7 @@ import java.time.Year;
 @Entity
 @Builder
 @Table(name = "transaction")
-public class Transaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Transaction extends BaseEntity{
     private String transactionType;
     private String description;
     private BigDecimal amount;

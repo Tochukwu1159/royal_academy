@@ -9,10 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ClassCategory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ClassCategory extends BaseEntity{
 
     @Column(nullable = false, unique = true)
     private String categoryName;

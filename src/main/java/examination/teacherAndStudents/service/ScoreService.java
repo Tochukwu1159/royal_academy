@@ -5,7 +5,7 @@ import examination.teacherAndStudents.entity.Score;
 
 import java.util.List;
 
-public interface ScoreService {
-    void addScore(ScoreRequest scoreRequest);
-    List<Score> getScoresByStudent(Long studentId);
-}
+//public interface ScoreService {
+//    void addScore(ScoreRequest scoreRequest);
+//    List<Score> getScoresByStudent(Long studentId);
+//}

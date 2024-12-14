@@ -2,16 +2,10 @@ package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.Security.SecurityConfig;
 import examination.teacherAndStudents.dto.*;
-import examination.teacherAndStudents.entity.Notification;
-import examination.teacherAndStudents.entity.Transaction;
-import examination.teacherAndStudents.entity.User;
-import examination.teacherAndStudents.entity.Wallet;
+import examination.teacherAndStudents.entity.*;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
-import examination.teacherAndStudents.repository.NotificationRepository;
-import examination.teacherAndStudents.repository.TransactionRepository;
-import examination.teacherAndStudents.repository.UserRepository;
-import examination.teacherAndStudents.repository.WalletRepository;
+import examination.teacherAndStudents.repository.*;
 import examination.teacherAndStudents.service.EmailService;
 import examination.teacherAndStudents.service.PayStackPaymentService;
 import examination.teacherAndStudents.service.WalletService;
@@ -43,6 +37,7 @@ public class WalletServiceImpl implements WalletService {
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
     private final NotificationRepository notificationRepository;
+    private final ProfileRepository profileRepository;
 
     @Override
     public WalletResponse getStudentWalletBalance() {
@@ -108,9 +103,14 @@ public class WalletServiceImpl implements WalletService {
     }
 
     private void createNewWalletAndTransaction(User student, String amount, PayStackTransactionResponse transactionResponse, DecimalFormat formatter) {
+        Optional<Profile> user = profileRepository.findByUser(student);
+
+        if (user == null) {
+            throw new CustomNotFoundException("Student profile does not exist");
+        }
         Wallet walletDao1 = Wallet.builder()
                 .balance(new BigDecimal(amount))
-                .user(student)
+                .userProfile(user.get())
                 .build();
         walletRepository.save(walletDao1);
 
@@ -133,9 +133,14 @@ public class WalletServiceImpl implements WalletService {
     }
 
     private void updateExistingWalletAndTransaction(User student, String amount, PayStackTransactionResponse transactionResponse, DecimalFormat formatter, Wallet wallet) {
+        Optional<Profile> user = profileRepository.findByUser(student);
+
+        if (user == null) {
+            throw new CustomNotFoundException("Student profile does not exist");
+        }
         BigDecimal result = wallet.getBalance().add(new BigDecimal(amount));
         wallet.setBalance(result);
-        wallet.setUser(student);
+        wallet.setUserProfile(user.get());
         walletRepository.save(wallet);
 
         Transaction transaction = Transaction.builder()

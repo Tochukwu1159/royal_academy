@@ -15,11 +15,7 @@ import java.math.BigDecimal;
 @Entity
 @Builder
 @Table(name = "wallet")
-public class Wallet {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class Wallet  extends  BaseEntity{
 
     @DecimalMin(value = "0.00", inclusive = true) // Allow zero values
     @Digits(integer = 9, fraction = 2)
@@ -38,6 +34,6 @@ public class Wallet {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Profile userProfile;
 
 }

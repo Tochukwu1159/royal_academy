@@ -14,10 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "fee_group")
 
 @Builder
-public class FeeGroup {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class FeeGroup extends BaseEntity{
 
     @Column(nullable = false)
     private String name;

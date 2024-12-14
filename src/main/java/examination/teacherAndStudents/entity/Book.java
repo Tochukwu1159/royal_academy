@@ -14,10 +14,8 @@ import java.util.List;
 @Table(name = "book")
 @Entity
 @Builder
-public class Book {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Book extends BaseEntity{
+
 
     private String title;
 
@@ -25,8 +23,5 @@ public class Book {
     private String rackNo;
 
     private int quantityAvailable; // Quantity of available copies
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private List<BookBorrowing> bookBorrowings;
 
-    // Constructors, getters, setters, etc.
 }

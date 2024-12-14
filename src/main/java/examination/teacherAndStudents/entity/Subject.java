@@ -20,10 +20,7 @@ import java.util.Set;
     @Table(name = "subject")
     @Entity
     @Builder
-    public class Subject {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public class Subject extends BaseEntity{
     private String name;
 
     private String asignedTeacher;
@@ -35,6 +32,6 @@ import java.util.Set;
     @Enumerated(EnumType.STRING)
     private StudentTerm term;
 
-        @OneToMany(mappedBy = "subject")
-    private  List<Score> scores;
+//        @OneToMany(mappedBy = "subject")
+//    private  List<Score> scores;
 }

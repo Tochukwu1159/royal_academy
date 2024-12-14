@@ -20,9 +20,9 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     private final AcademicYearRepository academicYearRepository;
 
     public AcademicYearResponse createAcademicYear(AcademicYearRequest request) {
+
         try {
-            AcademicYear academicYear = new AcademicYear();
-            academicYear.setYear(request.getYear());
+            AcademicYear academicYear = mapToAcademicYear(request);
             AcademicYear savedAcademicYear = academicYearRepository.save(academicYear);
             return mapToResponse(savedAcademicYear);
         } catch (Exception e) {
@@ -34,9 +34,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
         try {
             AcademicYear academicYear = academicYearRepository.findById(academicYearId)
                     .orElseThrow(() -> new NotFoundException("Academic year not found"));
-
             academicYear.setYear(request.getYear());
-
             AcademicYear updatedAcademicYear = academicYearRepository.save(academicYear);
             return mapToResponse(updatedAcademicYear);
         } catch (Exception e) {
@@ -77,5 +75,11 @@ public class AcademicYearServiceImpl implements AcademicYearService {
         response.setId(academicYear.getId());
         response.setYear(academicYear.getYear());
         return response;
+    }
+    private AcademicYear mapToAcademicYear(AcademicYearRequest academicYear) {
+        AcademicYear studentAcademicYear = new AcademicYear();
+        studentAcademicYear.setAcademicSession(academicYear.getAcademicSession());
+        studentAcademicYear.setYear(academicYear.getYear());
+        return studentAcademicYear;
     }
 }

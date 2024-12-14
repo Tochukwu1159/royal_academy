@@ -1,6 +1,7 @@
 package examination.teacherAndStudents.dto;
 
 import examination.teacherAndStudents.utils.ContractType;
+import examination.teacherAndStudents.utils.Gender;
 import examination.teacherAndStudents.utils.MaritalStatus;
 import examination.teacherAndStudents.utils.Roles;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -16,6 +18,8 @@ import java.util.Date;
 public class StaffRequest {
     private String profilePicture;
     private MaritalStatus maritalStatus;
+
+    private LocalDate admissionDate;
     private String firstName;
 
     private String lastName;
@@ -28,7 +32,7 @@ public class StaffRequest {
     private String academicQualification;
     private String bankAccountName;
     private String bankAccountNumber;
-    private String gender;
+    private Gender gender;
 
     private String religion;
 

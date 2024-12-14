@@ -17,10 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class StudyMaterial {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class StudyMaterial extends BaseEntity {
     private String title;
     private String filePath; // Path to the stored PDF file
     private Long courseId; // ID of the associated course

@@ -16,10 +16,8 @@ import java.util.List;
 @Table(name = "dormitory")
 @Entity
 @Builder
-public class Dormitory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Dormitory extends BaseEntity {
+
     private String dormitoryName;
 
     private DormitoryType type;
@@ -28,8 +26,8 @@ public class Dormitory {
 
     private Double intake;
 
-    @OneToMany(mappedBy = "dormitory", cascade = CascadeType.ALL)
-    private List<DormitoryRooms> dormitoryRoomsList;
+//    @OneToMany(mappedBy = "dormitory", cascade = CascadeType.ALL)
+//    private List<DormitoryRooms> dormitoryRoomsList;
 
 
 }

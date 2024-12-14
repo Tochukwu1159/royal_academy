@@ -19,6 +19,7 @@ import java.rmi.AlreadyBoundException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final NotificationRepository notificationRepository;
 
     private final DuesRepository duesRepository;
+    private final ProfileRepository profileRepository;
 
 
     @Transactional
@@ -52,7 +54,11 @@ public class PaymentServiceImpl implements PaymentService {
             if (user == null) {
                 throw new CustomNotFoundException("Please login as a Student"); // Return unauthorized response for non-admin users
             }
-            Wallet wallet = user.getWallet();
+            Optional<Profile> studentProfile = profileRepository.findByUser(user);
+            if (studentProfile == null) {
+                throw new CustomNotFoundException("Student profile does not exist"); // Return unauthorized response for non-admin users
+            }
+            Wallet wallet = studentProfile.get().getWallet();
             Dues dues = dueRepository.findById(dueId)
                     .orElseThrow(() -> new EntityNotFoundException("Due not found with id: " + dueId));
 

@@ -1,6 +1,7 @@
 package examination.teacherAndStudents.dto;
 
 import examination.teacherAndStudents.utils.ContractType;
+import examination.teacherAndStudents.utils.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ public class StaffResponse {
     private String academicQualification;
     private String bankAccountName;
     private String bankAccountNumber;
-    private String gender;
+    private Gender gender;
 
     private String religion;
 

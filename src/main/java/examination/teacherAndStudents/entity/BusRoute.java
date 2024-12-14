@@ -14,11 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "bus_route")
 @Entity
 @Builder
-public class BusRoute {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class BusRoute extends BaseEntity{
     private String routeName;
     private String startPoint;
     private String endPoint;

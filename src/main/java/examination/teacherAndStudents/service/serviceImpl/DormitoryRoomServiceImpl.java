@@ -45,6 +45,7 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
 
     private final NotificationRepository notificationRepository;
     private final DormitoryRepository dormitoryRepository;
+    private final ProfileRepository profileRepository;
 
     @Override
         public Page<DormitoryRoomResponse> getAllDormitoryRooms(int pageNo, int pageSize, String sortBy) {
@@ -211,6 +212,7 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
         try {
             String email = SecurityConfig.getAuthenticatedUserEmail();
             Optional<User> optionalUser = userRepository.findByEmail(email);
+            Optional<Profile> userProfile = profileRepository.findByUser(optionalUser.get());
 
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
@@ -220,7 +222,7 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
                     User student = userRepository.findById(studentId)
                             .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + studentId));
                     // Check if the student is already assigned to a dormitory
-                    if (student.getDormitory() != null) {
+                    if (userProfile.get().getDormitory() != null) {
                         throw new CustomNotFoundException("Student already assigned to a dormitory bed");
                     }
 
@@ -234,7 +236,7 @@ public class DormitoryRoomServiceImpl implements DormitoryRoomService {
                         availableBeds = bedToAssign.getNumberOfBeds();
                     }
                     if (availableBeds > 0) {
-                        student.setDormitory(bedToAssign);
+                        userProfile.get().setDormitory(bedToAssign);
                         userRepository.save(student);
 
                         // Decrease the number of available beds

@@ -15,11 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @Table(name = "staff_attendance")
-public class StaffAttendance {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class StaffAttendance extends BaseEntity{
     @Column(nullable = false)
     private String staffUniqueRegNumber;
 

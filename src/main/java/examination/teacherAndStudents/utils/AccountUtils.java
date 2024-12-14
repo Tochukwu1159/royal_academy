@@ -7,6 +7,7 @@ import examination.teacherAndStudents.error_handler.UserPasswordMismatchExceptio
 import examination.teacherAndStudents.repository.LibraryMemberRepository;
 import examination.teacherAndStudents.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.Contract;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -196,6 +197,10 @@ public class AccountUtils {
             throw new AuthenticationFailedException("User is not authenticated");
         }
         return authentication.getName();
+    }
+
+    public static String generateSubscriptionKey() {
+        return RandomStringUtils.randomAlphanumeric(16);
     }
 
     }

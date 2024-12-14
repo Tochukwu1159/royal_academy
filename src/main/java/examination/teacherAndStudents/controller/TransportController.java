@@ -70,9 +70,9 @@ public class TransportController {
             Transport transport1 = transport.get();
             String busRoute = transport1.getBusRoute().getRouteName();
             // Assuming students can be retrieved from the transport entity
-            Set<User> students = transport1.getStudents();
+//            Set<User> students = transport1.getStudents();
 
-            transportService.sendEmailToStudents(busRoute, students);
+//            transportService.sendEmailToStudents(busRoute, students);
 
             return ResponseEntity.ok("Emails sent successfully.");
         } catch (Exception e) {

@@ -14,11 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @Table(name = "medical_records")
-public class MedicalRecord {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class MedicalRecord extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)

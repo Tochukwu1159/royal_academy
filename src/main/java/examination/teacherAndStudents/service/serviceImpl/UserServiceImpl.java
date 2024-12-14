@@ -9,9 +9,11 @@ import examination.teacherAndStudents.entity.*;
 import examination.teacherAndStudents.error_handler.*;
 import examination.teacherAndStudents.repository.*;
 import examination.teacherAndStudents.service.EmailService;
+import examination.teacherAndStudents.service.SchoolService;
 import examination.teacherAndStudents.service.UserService;
 import examination.teacherAndStudents.utils.AccountUtils;
 import examination.teacherAndStudents.utils.Roles;
+import examination.teacherAndStudents.utils.StudentTerm;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -64,6 +67,8 @@ public class    UserServiceImpl implements UserService {
 
     private final  AuthenticationManager authenticationManager;
 
+    private final SchoolService schoolService;
+
     private final CustomUserDetailService customUserDetailsService;
 
     private final  PasswordResetTokenRepository passwordResetTokenRepository;
@@ -76,11 +81,11 @@ public class    UserServiceImpl implements UserService {
 
     private final  ClassCategoryRepository classCategoryRepository;
 
-    private final  StudentRecordRepository studentRecordRepository;
 
     private final  AcademicYearRepository academicYearRepository;
 
     private final  ModelMapper modelMapper;
+    private final ProfileRepository profileRepository;
 
 
     @Override
@@ -98,6 +103,18 @@ public class    UserServiceImpl implements UserService {
 
 
         User newUser = User.builder()
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .email(userRequest.getEmail())
+                .roles(Roles.STUDENT)
+                .isVerified(true)
+                .password(passwordEncoder.encode(userRequest.getPassword()))
+                .roles(Roles.STUDENT)
+//                .profilePicture(imageUrl)
+                .build();
+        User savedUser = userRepository.save(newUser);
+
+        Profile userProfile =  Profile.builder()
                 .gender(userRequest.getGender())
                 .dateOfBirth(userRequest.getDateOfBirth())
                 .religion(userRequest.getReligion())
@@ -107,30 +124,23 @@ public class    UserServiceImpl implements UserService {
                 .studentGuardianName(userRequest.getStudentGuardianName())
                 .studentGuardianPhoneNumber(userRequest.getStudentGuardianPhoneNumber())
                 .uniqueRegistrationNumber(AccountUtils.generateStudentId())
-                .firstName(userRequest.getFirstName())
                 .address(userRequest.getAddress())
                 .dateOfBirth(userRequest.getDateOfBirth())
-                .lastName(userRequest.getLastName())
-                .email(userRequest.getEmail())
-                .roles(Roles.STUDENT)
                 .admissionDate(userRequest.getAdmissionDate())
-                .isVerified(true)
                 .studentClass(subClass)
-                .phoneNumber(userRequest.getPhoneNumber())
-                .password(passwordEncoder.encode(userRequest.getPassword()))
-                .roles(Roles.STUDENT)
 //                .profilePicture(imageUrl)
+                .phoneNumber(userRequest.getPhoneNumber())
                 .build();
-        User savedUser = userRepository.save(newUser);
-            subClass.setNumberOfStudents(subClass.getNumberOfStudents() + 1);
-//            subClass.setUser(savedUser);
-            subClassRepository.save(subClass);
-        //create student's wallet
-        Wallet userWallet = new Wallet();
-        userWallet.setBalance(BigDecimal.ZERO);
-        userWallet.setTotalMoneySent(BigDecimal.ZERO);
-        userWallet.setUser(savedUser);
-        walletRepository.save(userWallet);
+       Profile saveUserProfile = profileRepository.save(userProfile);
+                    subClass.setNumberOfStudents(subClass.getNumberOfStudents() + 1);
+        //            subClass.setUser(savedUser);
+                    subClassRepository.save(subClass);
+                //create student's wallet
+                Wallet userWallet = new Wallet();
+                userWallet.setBalance(BigDecimal.ZERO);
+                userWallet.setTotalMoneySent(BigDecimal.ZERO);
+                userWallet.setUserProfile(saveUserProfile);
+                walletRepository.save(userWallet);
 
         EmailDetails emailDetails = EmailDetails.builder()
                 .recipient(savedUser.getEmail())
@@ -148,14 +158,9 @@ public class    UserServiceImpl implements UserService {
 
     private Map<String, Object> createModelWithData(UserRequestDto user) {
         Map<String, Object> model = new HashMap<>();
-
-        // Add data to the model
         model.put("name", user.getFirstName() + " " + user.getLastName());
         model.put("email", user.getEmail());
         model.put("password", user.getPassword());
-
-        // You can add more data as needed for your email template
-
         return model;
     }
 
@@ -170,10 +175,7 @@ public class    UserServiceImpl implements UserService {
         User newUser = User.builder()
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
-                .uniqueRegistrationNumber(AccountUtils.generateAdminId())
                 .email(userRequest.getEmail())
-                .phoneNumber(userRequest.getPhoneNumber())
-                .address(userRequest.getAddress())
                 .password(passwordEncoder.encode(userRequest.getPassword()))
                 .isVerified(true)
                 .roles(Roles.ADMIN)
@@ -203,19 +205,25 @@ public class    UserServiceImpl implements UserService {
                 throw new UserPasswordMismatchException("Wrong email or password");
             }
 
-//            UserDetails userDetails = loadUserByUsername(loginRequest.getEmail());
             Optional<User> userDetails = userRepository.findByEmail(loginRequest.getEmail());
+            if (userDetails.isEmpty()) {
+                throw new ResourceNotFoundException("User not found");
+            }
+            User user = userDetails.get();
+//            School school = user.getSchool();
+//            if (school == null) {
+//                throw new IllegalStateException("User is not associated with any school");
+//            }
+
+//            if (isSubscriptionExpired(school)) {
+//                throw new SubscriptionExpiredException("Subscription expired for user's school");
+//            }
 
             SecurityContextHolder.getContext().setAuthentication(authenticate);
             String token = "Bearer " + jwtUtil.generateToken(loginRequest.getEmail());
 
             // Create a UserDto object containing user details
             UserDto userDto = new UserDto();
-            userDto.setAddress(userDetails.get().getAddress());
-            userDto.setAge(userDto.getAge());
-            userDto.setGender(userDetails.get().getGender());
-            userDto.setPhoneNumber(userDetails.get().getPhoneNumber());
-            userDto.setUniqueRegistrationNumber(userDetails.get().getUniqueRegistrationNumber());
             userDto.setFirstName(userDetails.get().getFirstName());
             userDto.setLastName(userDetails.get().getLastName());
             userDto.setEmail(userDetails.get().getEmail());
@@ -246,10 +254,6 @@ public class    UserServiceImpl implements UserService {
 
             // Create a UserDto object containing user details
             UserDto userDto = new UserDto();
-            userDto.setAddress(userDetails.get().getAddress());
-            userDto.setAge(userDto.getAge());
-            userDto.setGender(userDetails.get().getGender());
-            userDto.setPhoneNumber(userDetails.get().getPhoneNumber());
             userDto.setFirstName(userDetails.get().getFirstName());
             userDto.setLastName(userDetails.get().getLastName());
             userDto.setEmail(userDetails.get().getEmail());
@@ -277,10 +281,25 @@ public class    UserServiceImpl implements UserService {
         }
         user.setFirstName(editUserDto.getFirstName());
         user.setLastName(editUserDto.getLastName());
-        user.setPhoneNumber(editUserDto.getPhoneNumber());
           User updatedUser = userRepository.save(user);
 
-
+        Profile userProfile =  Profile.builder()
+                .gender(editUserDto.getGender())
+                .dateOfBirth(editUserDto.getDateOfBirth())
+                .religion(editUserDto.getReligion())
+                .admissionDate(editUserDto.getAdmissionDate())
+                .studentGuardianOccupation(editUserDto.getStudentGuardianOccupation())
+                .studentGuardianOccupation(editUserDto.getStudentGuardianOccupation())
+                .studentGuardianName(editUserDto.getStudentGuardianName())
+                .studentGuardianPhoneNumber(editUserDto.getStudentGuardianPhoneNumber())
+                .uniqueRegistrationNumber(AccountUtils.generateStudentId())
+                .address(editUserDto.getAddress())
+                .dateOfBirth(editUserDto.getDateOfBirth())
+                .admissionDate(editUserDto.getAdmissionDate())
+//                .profilePicture(imageUrl)
+                .phoneNumber(editUserDto.getPhoneNumber())
+                .build();
+        profileRepository.save(userProfile);
 
          return modelMapper.map(user, UserResponse.class);
     }
@@ -506,6 +525,11 @@ public class    UserServiceImpl implements UserService {
                  subClass, academicYear, paging);
 
         return students.map((element) -> modelMapper.map(element, UserResponse.class));
+    }
+
+    private boolean isSubscriptionExpired(School school) {
+        LocalDate expiryDate = school.getSubscriptionExpiryDate();
+        return expiryDate != null && expiryDate.isBefore(LocalDate.now());
     }
 }
 

@@ -73,9 +73,9 @@ public class NoticeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Notice> updateNoticePost(@PathVariable Long id, @RequestBody UpdateNoticeRequest updatedNoticePost) {
+    public ResponseEntity<NoticeResponse> updateNoticePost(@PathVariable Long id, @RequestBody UpdateNoticeRequest updatedNoticePost) {
         try {
-            Notice updatedPost = blogService.updateNoticePost(id, updatedNoticePost);
+            NoticeResponse updatedPost = blogService.updateNoticePost(id, updatedNoticePost);
             if (updatedPost != null) {
                 return ResponseEntity.ok(updatedPost);
             } else {

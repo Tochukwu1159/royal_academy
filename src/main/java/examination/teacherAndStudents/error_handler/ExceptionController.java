@@ -39,8 +39,18 @@ public class ExceptionController  {
 
     }
 
+
     @ExceptionHandler(AuthenticationFailedException.class)
     public ResponseEntity<?> AuthenticationFailedException(AuthenticationFailedException ex) {
+        return new ResponseEntity<>(new ApiResponse<>((ex.getMessage()),false), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(SubscriptionExpiredException.class)
+    public ResponseEntity<?> SubscriptionExpiredException(SubscriptionExpiredException ex) {
+        return new ResponseEntity<>(new ApiResponse<>((ex.getMessage()),false), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(PaymentFailedException.class)
+    public ResponseEntity<?> PaymentFailedException(PaymentFailedException ex) {
         return new ResponseEntity<>(new ApiResponse<>((ex.getMessage()),false), HttpStatus.NOT_FOUND);
     }
 

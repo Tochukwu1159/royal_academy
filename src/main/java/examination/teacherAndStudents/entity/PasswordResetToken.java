@@ -9,11 +9,7 @@ import lombok.Setter;
     @Entity
     @Setter
     @Getter
-    public class PasswordResetToken {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "id", nullable = false)
-        private Long id;
+    public class PasswordResetToken extends BaseEntity{
         private String token;
         @OneToOne
         @JoinColumn(name = "users_details_users_id")

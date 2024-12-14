@@ -2,14 +2,17 @@ package examination.teacherAndStudents.service.serviceImpl;
 
 import examination.teacherAndStudents.dto.StaffRequest;
 import examination.teacherAndStudents.dto.StaffResponse;
+import examination.teacherAndStudents.entity.Profile;
 import examination.teacherAndStudents.entity.User;
 import examination.teacherAndStudents.error_handler.CustomInternalServerException;
 import examination.teacherAndStudents.error_handler.CustomNotFoundException;
 import examination.teacherAndStudents.error_handler.EntityNotFoundException;
 import examination.teacherAndStudents.objectMapper.StaffMapper;
+import examination.teacherAndStudents.repository.ProfileRepository;
 import examination.teacherAndStudents.repository.UserRepository;
 import examination.teacherAndStudents.service.StaffService;
 import examination.teacherAndStudents.utils.AccountUtils;
+import examination.teacherAndStudents.utils.ContractType;
 import examination.teacherAndStudents.utils.Roles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,17 +39,15 @@ public class StaffServiceImpl implements StaffService {
     private final UserRepository userRepository;
 
     private final StaffMapper staffMapper;
+    private final ProfileRepository profileRepository;
 
     // Create (Add)  staff
     public StaffResponse createStaff(StaffRequest staffRequest) {
         try {
-            User staff = staffMapper.mapToStaff(staffRequest);
-            staff.setUniqueRegistrationNumber(AccountUtils.generateStaffId());
-            staff.setRoles(staffRequest.getRoles());
-            User savedStaff = userRepository.save(staff);
-            return staffMapper.mapToStaffResponse(savedStaff);
+          mapToStaff(staffRequest);
+          mapToProfile(staffRequest);
+            return mapToStaffResponse(staffRequest);
         } catch (Exception e) {
-            // Handle any exceptions
             throw new CustomInternalServerException("Error creating  staff: " + e.getMessage());
         }
     }
@@ -54,27 +57,13 @@ public class StaffServiceImpl implements StaffService {
         try {
             User existingStaff = userRepository.findById(StaffId)
                     .orElseThrow(() -> new CustomNotFoundException(" staff not found with ID: " + StaffId));
-
-            // Update fields with values from the updatedStaff request
             existingStaff.setFirstName(updatedStaff.getFirstName());
             existingStaff.setLastName(updatedStaff.getLastName());
-            existingStaff.setPhoneNumber(updatedStaff.getPhoneNumber());
-            existingStaff.setAddress(updatedStaff.getAddress());
-            existingStaff.setBankName(updatedStaff.getBankName());
-            existingStaff.setBankAccountName(updatedStaff.getBankAccountName());
-            existingStaff.setAcademicQualification(updatedStaff.getAcademicQualification());
-            existingStaff.setReligion(updatedStaff.getReligion());
-            existingStaff.setBankAccountNumber(updatedStaff.getBankAccountNumber());
             existingStaff.setMiddleName(updatedStaff.getMiddleName());
-            existingStaff.setMaritalStatus(updatedStaff.getMaritalStatus());
-            existingStaff.setContractType(updatedStaff.getContractType());
-            existingStaff.setSalary(updatedStaff.getSalary());
-            // Update  fields as needed
-
-            User updatedStaffEntity = userRepository.save(existingStaff);
-            return staffMapper.mapToStaffResponse(updatedStaffEntity);
+            userRepository.save(existingStaff);
+            mapToProfile(updatedStaff);
+            return mapToStaffResponse(updatedStaff);
         } catch (Exception e) {
-            // Handle any exceptions
             throw new CustomInternalServerException("Error updating  staff: " + e.getMessage());
         }
     }
@@ -120,6 +109,49 @@ public class StaffServiceImpl implements StaffService {
         }
     }
 
+private  User mapToStaff(StaffRequest staffRequest){
+        User staff = new User();
+    staff.setFirstName(staffRequest.getFirstName());
+    staff.setLastName(staffRequest.getLastName());
+    staff.setRoles(staffRequest.getRoles());
+    staff.setMiddleName(staffRequest.getMiddleName());
+    staff.setEmail(staff.getEmail());
+    userRepository.save(staff);
+    return staff;
+}
 
+    private  Profile mapToProfile(StaffRequest staffRequest){
+        Profile staffProfile = new Profile();
+        staffProfile.setAge(staffRequest.getAge());
+        staffProfile.setAddress(staffRequest.getAddress());
+        staffProfile.setGender(staffProfile.getGender());
+        staffProfile.setAcademicQualification(staffProfile.getAcademicQualification());
+        staffProfile.setUniqueRegistrationNumber(AccountUtils.generateStaffId());
+        staffProfile.setReligion(staffRequest.getReligion());
+        staffProfile.setPhoneNumber(staffRequest.getPhoneNumber());
+        staffProfile.setDateOfBirth(staffRequest.getDateOfBirth());
+        staffProfile.setAdmissionDate(staffRequest.getAdmissionDate());
+        profileRepository.save(staffProfile);
+        return staffProfile;
+    }
+
+    private  StaffResponse mapToStaffResponse(StaffRequest request){
+        StaffResponse staffResponse = new StaffResponse();
+        staffResponse.setAge(request.getAge());
+        staffResponse.setAddress(request.getAddress());
+        staffResponse.setGender(request.getGender());
+        staffResponse.setBankName(request.getBankName());
+        staffResponse.setDateOfBirth(request.getDateOfBirth());
+        staffResponse.setResume(request.getResume());
+        staffResponse.setReligion(request.getReligion());
+        staffResponse.setFirstName(request.getFirstName());
+        staffResponse.setFirstName(request.getFirstName());
+        staffResponse.setAcademicQualification(request.getAcademicQualification());
+        staffResponse.setUniqueRegistrationNumber(request.getUniqueRegistrationNumber());
+        staffResponse.setPhoneNumber(request.getPhoneNumber());
+        staffResponse.setContractType(request.getContractType());
+        staffResponse.setBankAccountNumber(request.getBankAccountNumber());
+        return staffResponse;
+    }
 
 }

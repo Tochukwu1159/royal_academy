@@ -17,10 +17,7 @@ import java.util.Date;
 @Table(name = "schoolExpense")
 @Entity
 @Builder
-public class SchoolExpense {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class SchoolExpense extends BaseEntity{
 
     private BigDecimal amount;
     private String purpose;
