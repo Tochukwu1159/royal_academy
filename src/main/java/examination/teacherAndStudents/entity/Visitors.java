@@ -27,6 +27,6 @@ public class Visitors extends BaseEntity{
     private LocalDateTime signIn;
 
     @Column(name = "signOut")
-    private LocalDateTime signOut;
+    private LocalDateTime signOut;;
 
 }
